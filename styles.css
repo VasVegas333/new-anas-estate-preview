@@ -152,6 +152,41 @@ textarea {
 }
 
 /* ==================================================
+   Responsive menu
+================================================== */
+
+.menu-toggle {
+  display: none;
+
+  width: 42px;
+  height: 42px;
+  padding: 8px;
+
+  background: transparent;
+  border: 0;
+
+  cursor: pointer;
+}
+
+.menu-toggle span {
+  display: block;
+
+  width: 26px;
+  height: 2px;
+  margin: 5px auto;
+
+  background: var(--blue);
+
+  transition:
+    transform 0.2s ease,
+    opacity 0.2s ease;
+}
+
+.mobile-nav {
+  display: none;
+}
+
+/* ==================================================
    Hero
 ================================================== */
 
@@ -683,6 +718,76 @@ h1 span {
 
   .nav {
     display: none;
+  }
+
+  .site-header {
+    grid-template-columns: 1fr auto;
+    padding: 0 24px;
+  }
+
+  .logo {
+    grid-column: 1;
+    grid-row: 1;
+
+    justify-self: start;
+  }
+
+  .menu-toggle {
+    display: block;
+
+    grid-column: 2;
+    grid-row: 1;
+
+    justify-self: end;
+  }
+
+  .mobile-nav {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    left: 0;
+
+    display: none;
+    flex-direction: column;
+
+    padding: 12px 24px 20px;
+
+    background: var(--white);
+    border-top: 1px solid var(--light-border);
+    border-bottom: 1px solid var(--gold-border);
+    box-shadow: 0 12px 24px rgba(0, 18, 99, 0.12);
+  }
+
+  .mobile-nav.is-open {
+    display: flex;
+  }
+
+  .mobile-nav a {
+    padding: 13px 0;
+
+    color: var(--blue);
+    border-bottom: 1px solid var(--light-border);
+
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .mobile-nav a:last-child {
+    border-bottom: 0;
+  }
+
+  .menu-toggle.is-open span:nth-child(1) {
+    transform: translateY(7px) rotate(45deg);
+  }
+
+  .menu-toggle.is-open span:nth-child(2) {
+    opacity: 0;
+  }
+
+  .menu-toggle.is-open span:nth-child(3) {
+    transform: translateY(-7px) rotate(-45deg);
   }
 
   .hero {
