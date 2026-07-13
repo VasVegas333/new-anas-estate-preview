@@ -84,6 +84,9 @@ textarea {
   background-repeat: repeat-x;
   background-position: left center;
   background-size: auto 15px;
+
+  border-top: 2px solid var(--gold);
+  border-bottom: 2px solid var(--gold);
 }
 
 /* ==================================================
