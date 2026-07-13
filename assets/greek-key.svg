@@ -1,9 +1,10 @@
 <svg
   xmlns="http://www.w3.org/2000/svg"
-width="277.407"
+  width="261.407"
   height="138.844"
-  viewBox="0 0 277.407 138.844"
-  shape-rendering="geometricPrecision"
+  viewBox="8 0 261.407 138.844"
+  preserveAspectRatio="none"
+  shape-rendering="crispEdges"
 >
   <g fill="#A88D57">
     <polygon
