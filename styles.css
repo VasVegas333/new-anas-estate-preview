@@ -1,3 +1,10 @@
+@font-face {
+  font-family: "Luton Southard Script";
+  src: url("./assets/fonts/luton-southard-script.otf") format("opentype");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
 :root {
   --blue: #001263;
   --blue-dark: #000b45;
