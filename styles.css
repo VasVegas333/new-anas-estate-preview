@@ -119,7 +119,7 @@ textarea {
 
 .nav {
   display: flex;
-  gap: 28px;
+  gap: 150px;
 
   font-size: 12px;
   font-weight: 600;
