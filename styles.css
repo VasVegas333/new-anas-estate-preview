@@ -85,8 +85,8 @@ textarea {
   background-position: left center;
   background-size: auto 15px;
 
-  border-top: 1px solid var(--gold);
-  border-bottom: 1px solid var(--gold);
+  border-top: 2.5px solid var(--gold);
+  border-bottom: 2.5px solid var(--gold);
 }
 
 /* ==================================================
