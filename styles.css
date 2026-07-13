@@ -75,11 +75,15 @@ textarea {
    Greek key border
 ================================================== */
 
+/* ==================================================
+   Greek key border
+================================================== */
+
 .greek-line {
   width: 100%;
   height: 28px;
 
-  background-color: #001263;
+  background-color: var(--blue);
   background-image: url("./assets/greek-key.svg");
   background-repeat: repeat-x;
   background-position: left center;
