@@ -60,26 +60,15 @@ a {
 ------------------------- */
 
 .greek-line {
-  height: 20px;
-  background-color: var(--paper);
-  background-image:
-    linear-gradient(var(--brand-blue) 3px, transparent 3px),
-    linear-gradient(90deg, var(--brand-blue) 3px, transparent 3px),
-    linear-gradient(var(--brand-blue) 3px, transparent 3px),
-    linear-gradient(90deg, var(--brand-blue) 3px, transparent 3px);
-  background-size:
-    24px 12px,
-    12px 24px,
-    24px 12px,
-    12px 24px;
-  background-position:
-    0 0,
-    0 0,
-    12px 9px,
-    9px 12px;
-  background-repeat: repeat;
-  border-top: 2px solid var(--brand-gold);
-  border-bottom: 2px solid var(--brand-gold);
+  width: 100%;
+  height: 18px;
+  background-color: #ffffff;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='16' viewBox='0 0 48 16'%3E%3Cpath d='M0 2H48 M0 14H48 M0 6H12V10H4V6 M12 10H24V6H16V10 M24 6H36V10H28V6 M36 10H48V6H40V10' fill='none' stroke='%23001263' stroke-width='2' stroke-linejoin='miter'/%3E%3C/svg%3E");
+  background-repeat: repeat-x;
+  background-position: center;
+  background-size: 48px 16px;
+  border-top: 2px solid var(--gold);
+  border-bottom: 2px solid var(--gold);
 }
 
 /* -------------------------
