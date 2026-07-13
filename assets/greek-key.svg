@@ -1,36 +1,44 @@
 <svg
   xmlns="http://www.w3.org/2000/svg"
-  width="32"
-  height="28"
-  viewBox="0 0 32 28"
+  width="96"
+  height="48"
+  viewBox="0 0 96 48"
 >
   <rect
-    width="32"
-    height="28"
+    width="96"
+    height="48"
     fill="#001263"
   />
 
   <path
     d="
-      M0 2 H32
-      M0 26 H32
+      M4 4
+      H92
+      V44
+      H4
+      Z
 
-      M2 5
-      H28
-      V23
-      H5
-      V9
-      H24
-      V19
-      H9
-      V13
+      M12 12
+      H40
+      V36
       H20
-      V15
-      H13
+      V20
+      H32
+      V28
+      H28
+
+      M56 12
+      H84
+      V36
+      H64
+      V20
+      H76
+      V28
+      H72
     "
     fill="none"
     stroke="#B98A3D"
-    stroke-width="2.5"
+    stroke-width="6"
     stroke-linecap="square"
     stroke-linejoin="miter"
   />
