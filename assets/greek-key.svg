@@ -1,28 +1,65 @@
 <svg
   xmlns="http://www.w3.org/2000/svg"
-width="112"
+  width="112"
   height="68"
   viewBox="0 0 112 68"
   shape-rendering="crispEdges"
 >
+  <!-- Navy background -->
+  <rect
+    width="112"
+    height="68"
+    fill="#141844"
+  />
 
-  width="80"
-  height="68"
-  viewBox="0 0 80 68"
-  shape-rendering="crispEdges"
->
-  <!-- Deep Blue Background -->
-  <rect width="80" height="68" fill="#141844" />
+  <!-- Greek key pattern -->
+  <g
+    fill="none"
+    stroke="#9C8350"
+    stroke-width="8"
+    stroke-linecap="square"
+    stroke-linejoin="miter"
+  >
+    <!-- Top and bottom frame lines -->
+    <path d="M 0 8 H 112" />
+    <path d="M 0 60 H 112" />
 
-  <!-- Gold Repeating Pattern Unit -->
-  <g fill="none" stroke="#9C8350" stroke-width="8" stroke-linecap="square" stroke-linejoin="miter">
-    <!-- Top & Bottom Frame Bars -->
-    <line x1="0" y1="10" x2="80" y2="10" />
-    <line x1="0" y1="58" x2="80" y2="58" />
+    <!-- Left square spiral -->
+    <path
+      d="
+        M 4 8
+        V 60
 
-    <!-- Pure Continuous Meander Path -->
-    <!-- Width per tile is exactly 80px. Line thickness and gaps are precisely 8px. -->
-    <path d="M 0,42 H 24 V 26 H 56 V 42 H 40 V 34" />
-    <path d="M 80,42 H 64" />
+        M 4 20
+        H 52
+        V 52
+        H 12
+        V 28
+        H 44
+        V 44
+        H 20
+        V 36
+        H 32
+      "
+    />
+
+    <!-- Right square spiral -->
+    <path
+      d="
+        M 108 8
+        V 60
+
+        M 108 20
+        H 60
+        V 52
+        H 100
+        V 28
+        H 68
+        V 44
+        H 92
+        V 36
+        H 80
+      "
+    />
   </g>
 </svg>
