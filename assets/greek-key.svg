@@ -1,42 +1,38 @@
-<svg
-  xmlns="http://www.w3.org/2000/svg"
-  width="40"
-  height="18"
-  viewBox="0 0 40 18"
-  shape-rendering="crispEdges"
->
-  <!-- Background -->
-  <rect
-    width="40"
-    height="18"
-    fill="#001263"
-  />
+<svg xmlns="http://www.w3.org/2000/svg"
+     width="40"
+     height="18"
+     viewBox="0 0 40 18"
+     shape-rendering="crispEdges">
 
-  <!-- Top and bottom rails -->
+  <rect width="40" height="18" fill="#001263"/>
+
   <g fill="#B98A3D">
-    <rect x="0" y="0" width="40" height="2" />
-    <rect x="0" y="16" width="40" height="2" />
 
-    <!-- Left-facing key -->
-    <rect x="0" y="2" width="18" height="2" />
-    <rect x="16" y="4" width="2" height="10" />
-    <rect x="4" y="12" width="14" height="2" />
-    <rect x="4" y="6" width="2" height="8" />
-    <rect x="6" y="6" width="8" height="2" />
-    <rect x="12" y="8" width="2" height="4" />
-    <rect x="8" y="10" width="6" height="2" />
+    <!-- top / bottom -->
+    <rect x="0" y="0" width="40" height="2"/>
+    <rect x="0" y="16" width="40" height="2"/>
 
-    <!-- Right-facing mirrored key -->
-    <rect x="22" y="2" width="18" height="2" />
-    <rect x="22" y="4" width="2" height="10" />
-    <rect x="22" y="12" width="14" height="2" />
-    <rect x="34" y="6" width="2" height="8" />
-    <rect x="26" y="6" width="8" height="2" />
-    <rect x="26" y="8" width="2" height="4" />
-    <rect x="26" y="10" width="6" height="2" />
+    <!-- left key -->
+    <rect x="0" y="2" width="18" height="2"/>
+    <rect x="16" y="2" width="2" height="12"/>
+    <rect x="4" y="12" width="14" height="2"/>
+    <rect x="4" y="6" width="2" height="8"/>
+    <rect x="4" y="6" width="10" height="2"/>
+    <rect x="12" y="8" width="2" height="4"/>
+    <rect x="8" y="10" width="6" height="2"/>
 
-    <!-- Seam connectors -->
-    <rect x="18" y="2" width="2" height="14" />
-    <rect x="38" y="2" width="2" height="14" />
+    <!-- centre divider -->
+    <rect x="19" y="2" width="2" height="14"/>
+
+    <!-- right key -->
+    <rect x="22" y="2" width="18" height="2"/>
+    <rect x="22" y="2" width="2" height="12"/>
+    <rect x="22" y="12" width="14" height="2"/>
+    <rect x="34" y="6" width="2" height="8"/>
+    <rect x="26" y="6" width="10" height="2"/>
+    <rect x="26" y="8" width="2" height="4"/>
+    <rect x="26" y="10" width="6" height="2"/>
+
   </g>
+
 </svg>
