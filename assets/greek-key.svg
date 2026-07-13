@@ -1,45 +1,37 @@
 <svg
   xmlns="http://www.w3.org/2000/svg"
-  width="96"
-  height="48"
-  viewBox="0 0 96 48"
+  width="89"
+  height="67"
+  viewBox="0 0 89 67"
+  shape-rendering="crispEdges"
 >
-  <rect
-    width="96"
-    height="48"
-    fill="#001263"
-  />
+  <rect width="89" height="67" fill="#141844" />
 
-  <path
-    d="
-      M4 4
-      H92
-      V44
-      H4
-      Z
+  <g fill="#9C8350">
+    <!-- Top and bottom bars -->
+    <rect x="0" y="6" width="89" height="8" />
+    <rect x="0" y="53" width="89" height="8" />
 
-      M12 12
-      H40
-      V36
-      H20
-      V20
-      H32
-      V28
-      H28
+    <!-- Outer side connectors -->
+    <rect x="0" y="14" width="6" height="39" />
+    <rect x="83" y="14" width="6" height="39" />
 
-      M56 12
-      H84
-      V36
-      H64
-      V20
-      H76
-      V28
-      H72
-    "
-    fill="none"
-    stroke="#B98A3D"
-    stroke-width="6"
-    stroke-linecap="square"
-    stroke-linejoin="miter"
-  />
+    <!-- Centre connector -->
+    <rect x="48" y="14" width="6" height="39" />
+
+    <!-- Left meander -->
+    <rect x="9" y="21" width="32" height="6" />
+    <rect x="9" y="21" width="6" height="24" />
+    <rect x="9" y="40" width="19" height="6" />
+    <rect x="22" y="33" width="6" height="13" />
+    <rect x="22" y="33" width="13" height="6" />
+    <rect x="35" y="21" width="6" height="32" />
+
+    <!-- Right meander -->
+    <rect x="61" y="21" width="19" height="6" />
+    <rect x="61" y="21" width="6" height="13" />
+    <rect x="61" y="28" width="13" height="6" />
+    <rect x="74" y="21" width="6" height="25" />
+    <rect x="61" y="40" width="19" height="6" />
+  </g>
 </svg>
