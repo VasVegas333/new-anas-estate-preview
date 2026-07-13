@@ -1,0 +1,1 @@
+const stripeLinks={fiveL:'PASTE_5L_STRIPE_LINK',sixteenL:'PASTE_16L_STRIPE_LINK'};document.querySelectorAll('.stripe').forEach(a=>{const u=stripeLinks[a.dataset.product];if(u.startsWith('http')){a.href=u;a.target='_blank'}else{a.onclick=e=>{e.preventDefault();alert('Add your Stripe Payment Link in script.js')}}});

@@ -1,0 +1,1 @@
+Upload all files to your GitHub repository root. Add Stripe links in script.js. Enable GitHub Pages from the main branch.
