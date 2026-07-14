@@ -659,7 +659,7 @@ h3 {
   color: var(--blue);
 
   font-family: var(--script) !important;
-  font-size: clamp(78px, 7vw, 112px) !important;
+  font-size: clamp(78px, 8vw, 112px) !important;
   font-style: normal;
   font-weight: 400;
   line-height: 0.82;
@@ -757,9 +757,58 @@ h3 {
    Origin and Kalamata
 ================================================== */
 
+/* ==================================================
+   Rooted in Place
+================================================== */
+
 .origin-section {
-  padding: var(--section-padding) clamp(24px, 7vw, 100px);
-  background: var(--cream);
+    position: relative;
+    overflow: hidden;
+
+    padding: var(--section-padding) clamp(24px,7vw,100px);
+
+    background: var(--cream);
+}
+
+.origin-bg{
+    position:absolute;
+
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+
+    background:url("./assets/origin-line-art.png") center center / contain no-repeat;
+
+    opacity:.075;
+
+    pointer-events:none;
+
+    z-index:0;
+
+    mix-blend-mode:multiply;
+}
+
+.origin-bg::after{
+    content:"";
+
+    position:absolute;
+    inset:0;
+
+    background:linear-gradient(
+        to bottom,
+        rgba(247,244,238,.96),
+        rgba(247,244,238,.15) 20%,
+        rgba(247,244,238,0) 45%,
+        rgba(247,244,238,0) 55%,
+        rgba(247,244,238,.15) 80%,
+        rgba(247,244,238,.96)
+    );
+}
+
+.origin-content{
+    position:relative;
+    z-index:2;
 }
 
 .origin-art,
