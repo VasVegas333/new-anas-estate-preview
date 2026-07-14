@@ -225,6 +225,11 @@ h3 {
   transform: scaleX(1);
 }
 
+.nav a.is-active,
+.mobile-nav a.is-active {
+  color: var(--gold);
+}
+
 .nav-left {
   grid-column: 1;
   grid-row: 1;
