@@ -16,7 +16,7 @@
   --white: #ffffff;
   --light-border: #eeeeee;
   --gold-border: #d9c5a3;
-
+  --script: "Luton Southard Script", cursive;
   --serif: "Cormorant Garamond", serif;
   --sans: "Montserrat", sans-serif;
 
@@ -472,10 +472,13 @@ h3 {
 
 .script {
   margin: 18px 0 8px;
-
   color: var(--blue);
 
-  font: 400 clamp(34px, 4vw, 52px) "Parisienne", cursive;
+  font-family: var(--script);
+  font-size: clamp(42px, 5vw, 68px);
+  font-style: normal;
+  font-weight: 400;
+  line-height: 1;
 }
 
 .origin {
