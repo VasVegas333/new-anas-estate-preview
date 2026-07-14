@@ -1400,6 +1400,10 @@ h3 {
    Mobile hero overlap fix
 ================================================== */
 
+/* ==================================================
+   Mobile hero bottle fix
+================================================== */
+
 @media (max-width: 680px) {
   .hero {
     display: flex;
@@ -1423,9 +1427,6 @@ h3 {
 
   .hero-bottle-wrap {
     position: relative;
-    right: auto;
-    bottom: auto;
-    left: auto;
     z-index: 2;
 
     display: flex;
@@ -1433,30 +1434,39 @@ h3 {
     justify-content: center;
 
     width: 100%;
-    height: 330px;
+    min-height: 330px;
     margin-top: 32px;
 
     translate: none !important;
     transform: none !important;
-    animation: none !important;
   }
 
   .hero-bottle {
     position: static;
-    right: auto;
-    bottom: auto;
-    left: auto;
+
+    display: block;
 
     width: auto;
     max-width: 72vw;
-    height: 100%;
+    height: auto;
     max-height: 330px;
+    margin: 0 auto;
 
     object-fit: contain;
 
-    translate: none !important;
-    transform: none !important;
-    animation: none !important;
+    transform: none;
+    animation: bottle-float-mobile 6s ease-in-out infinite;
+  }
+}
+
+@keyframes bottle-float-mobile {
+  0%,
+  100% {
+    translate: 0 0;
+  }
+
+  50% {
+    translate: 0 -8px;
   }
 }
   
