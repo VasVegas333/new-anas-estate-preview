@@ -1396,33 +1396,45 @@ h3 {
     width: 125px;
   }
 
-  .hero {
-    display: block;
+.hero {
+  display: block;
 
-    min-height: 820px;
-    padding: 55px 20px 290px;
+  min-height: 900px;
+  padding: 52px 20px 360px;
 
-    text-align: center;
-  }
+  text-align: center;
+}
 
-  .hero-art {
-    opacity: 0.25;
-  }
+.hero-copy {
+  position: relative;
+  z-index: 4;
 
-  .hero-fade {
-    background:
-      linear-gradient(
-        180deg,
-        rgba(255, 255, 255, 0.98) 0%,
-        rgba(255, 255, 255, 0.85) 62%,
-        rgba(255, 255, 255, 0.55) 100%
-      );
-  }
+  max-width: none;
+}
 
-  .hero-copy {
-    max-width: none;
-  }
+.hero-bottle-wrap {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 2;
 
+  display: flex;
+  justify-content: center;
+
+  pointer-events: none;
+}
+
+.hero-bottle {
+  position: static;
+
+  width: auto;
+  max-width: 72vw;
+  max-height: 330px;
+
+  transform: none;
+}
+  
   .hero h1 {
     font-size: clamp(40px, 13vw, 60px);
   }
