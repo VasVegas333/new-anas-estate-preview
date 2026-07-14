@@ -482,7 +482,7 @@ h3 {
   color: var(--blue);
 
   font-family: var(--script);
-  font-size: clamp(64px, 6vw, 92px);
+  font-size: clamp(64px, 5vw, 92px);
   font-weight: 400;
   line-height: 0.9;
   letter-spacing: 0;
