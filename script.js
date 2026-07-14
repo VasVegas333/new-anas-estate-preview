@@ -3,9 +3,9 @@
 // ==================================================
 
 const stripeLinks = {
-  bottle: "PASTE_750ML_STRIPE_LINK",
-  fiveL: "PASTE_5L_STRIPE_LINK",
-  sixteenL: "PASTE_16L_STRIPE_LINK"
+  bottle: "https://buy.stripe.com/bJe28r5wh9GYbhocZF2Ji08",
+  fiveL: "https://buy.stripe.com/aFadR92k5cTadpwgbR2Ji06",
+  sixteenL: "https://buy.stripe.com/bJe6oH3o9dXegBI4t92Ji07"
 };
 
 const stripeButtons = document.querySelectorAll(".stripe");
