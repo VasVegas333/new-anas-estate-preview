@@ -1469,7 +1469,40 @@ h3 {
     translate: 0 -8px;
   }
 }
-  
+/* ==================================================
+   Mobile ornament alignment
+================================================== */
+
+.ornament,
+.section-heading .ornament,
+.story-content .ornament,
+.contact-copy .ornament,
+.products .ornament,
+.tasting-section .ornament,
+.origin-section .ornament,
+.harvest-section .ornament,
+.recipes-section .ornament,
+.uses-section .ornament {
+  display: block;
+  width: 100%;
+  margin: 12px auto 24px;
+  text-align: center !important;
+}
+
+.section-heading,
+.story-content,
+.contact-copy {
+  text-align: center;
+}
+
+.section-heading .ornament::before,
+.section-heading .ornament::after,
+.story-content .ornament::before,
+.story-content .ornament::after,
+.contact-copy .ornament::before,
+.contact-copy .ornament::after {
+  margin: 0 auto;
+}  
   .hero h1 {
     font-size: clamp(40px, 13vw, 60px);
   }
