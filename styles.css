@@ -538,7 +538,7 @@ h3 {
 .story-section {
   padding: var(--section-padding) clamp(24px, 7vw, 100px);
   overflow: hidden;
-  background: var(--white);
+  background: var(--cream);
 }
 
 .story-art-wrap {
@@ -642,7 +642,7 @@ h3 {
 
 .origin-section {
   padding: var(--section-padding) clamp(24px, 7vw, 100px);
-  background: var(--cream);
+  background: var(--white);
 }
 
 .origin-art,
