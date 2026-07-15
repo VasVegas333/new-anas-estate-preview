@@ -13,7 +13,7 @@ import { FORMSUBMIT_ACTION, SITE } from '../config/site';
   <main>
     <PageHero
       label="Contact and Wholesale"
-      title="Bring Ana’s Estate to Your Customers"
+      title="Contact Us"
       titleId="contact-title"
       description="For product questions, wholesale inquiries or retail partnerships, send us a message."
     />
@@ -31,15 +31,15 @@ import { FORMSUBMIT_ACTION, SITE } from '../config/site';
             <p>
               <strong>Imported by</strong>
               <br />
-              {SITE.importer}
+              {SITE.companyName}
               <br />
-              {SITE.location}
+              {SITE.companyAddress}
             </p>
           </div>
         </div>
 
         <form class="contact-form reveal reveal-right" action={FORMSUBMIT_ACTION} method="POST">
-          <input type="hidden" name="_subject" value="New Ana’s Estate website inquiry" />
+          <input type="hidden" name="_subject" value="Ana’s Estate website contact form submission" />
           <input type="hidden" name="_captcha" value="false" />
 
           <label for="contact-name">Name</label>
