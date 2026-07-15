@@ -2663,7 +2663,7 @@ h3 {
 }
 
 .checkout-empty__inner {
-  width: min(640px, 100% - 2 * var(--page-gutter));
+  width: min(840px, 100% - 2 * var(--page-gutter));
   padding: 48px 24px;
   text-align: center;
 }
