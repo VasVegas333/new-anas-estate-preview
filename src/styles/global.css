@@ -1,6 +1,6 @@
 @font-face {
   font-family: "Luthon Southard Script";
-  src: url("./assets/fonts/luthon-southard-script.otf") format("opentype");
+  src: url("/fonts/luthon-southard-script.otf") format("opentype");
   font-style: normal;
   font-weight: 400;
   font-display: swap;
@@ -23,6 +23,7 @@
   --sans: "Montserrat", sans-serif;
 
   --page-width: 1280px;
+  --page-gutter: clamp(24px, 4vw, 48px);
   --section-padding: clamp(64px, 8vw, 110px);
 
   --animation-fast: 0.25s;
@@ -114,6 +115,21 @@ h3 {
 }
 
 /* ==================================================
+   Content containers
+================================================== */
+
+.section-container {
+  width: 100%;
+  max-width: var(--page-width);
+  margin-inline: auto;
+  padding-inline: var(--page-gutter);
+}
+
+.section-container--narrow {
+  max-width: 980px;
+}
+
+/* ==================================================
    Announcement bar
 ================================================== */
 
@@ -123,10 +139,10 @@ h3 {
   justify-content: center;
   gap: 28px;
   min-height: 31px;
-  padding: 7px 16px;
+  padding: 8px 16px;
   color: var(--white);
   background: var(--blue);
-  font: 600 12px var(--serif);
+  font: 600 0.9em var(--serif);
   letter-spacing: 0.15em;
   text-align: center;
   text-transform: uppercase;
@@ -144,7 +160,7 @@ h3 {
   width: 100%;
   height: 28px;
   background-color: var(--blue);
-  background-image: url("./assets/greek-key.svg");
+  background-image: url("/textures/greek-key.svg");
   background-repeat: repeat-x;
   background-position: left center;
   background-size: auto 15px;
@@ -162,14 +178,18 @@ h3 {
   position: sticky;
   top: 0;
   z-index: 100;
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 230px minmax(0, 1fr);
-  align-items: center;
   height: 115px;
-  padding: 0 clamp(24px, 7vw, 110px);
   background: rgba(255, 255, 255, 0.96);
   border-bottom: 1px solid var(--light-border);
   backdrop-filter: blur(12px);
+}
+
+.site-header__inner {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 230px minmax(0, 1fr);
+  align-items: center;
+  height: 100%;
 }
 
 .logo {
@@ -396,14 +416,19 @@ h3 {
 
 .hero {
   position: relative;
+  padding-block: 65px 80px;
+  overflow: hidden;
+  isolation: isolate;
+  background: var(--white);
+}
+
+.hero__inner {
+  position: relative;
+  z-index: 2;
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(280px, 0.65fr);
   align-items: center;
   min-height: 650px;
-  padding: 65px clamp(24px, 8vw, 130px) 80px;
-  overflow: hidden;
-  isolation: isolate;
-  background: var(--white);
 }
 
 .hero-art {
@@ -536,7 +561,7 @@ h3 {
 ================================================== */
 
 .story-section {
-  padding: var(--section-padding) clamp(24px, 7vw, 100px);
+  padding-block: var(--section-padding);
   overflow: hidden;
   background: var(--white);
 }
@@ -648,7 +673,7 @@ h3 {
 .origin-section {
   position: relative;
   overflow: hidden;
-  padding: var(--section-padding) clamp(24px, 7vw, 100px);
+  padding-block: var(--section-padding);
   background: var(--cream);
 }
 
@@ -657,7 +682,7 @@ h3 {
   inset: 0;
   z-index: 0;
 
-  background-image: url("./assets/origin-line-art.png");
+  background-image: url("/textures/origin-line-art.png");
   background-repeat: no-repeat;
   background-position: center center;
   background-size: cover;
@@ -695,10 +720,7 @@ h3 {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 0;
-
-  max-width: 1120px;
-  margin: 0 auto;
-
+  width: 100%;
   background: rgba(255, 255, 255, 0.76);
   border: 1px solid var(--gold-border);
   backdrop-filter: blur(1px);
@@ -749,31 +771,15 @@ h3 {
 ================================================== */
 
 .harvest-section {
-  padding: var(--section-padding) clamp(24px, 7vw, 100px);
+  padding-block: var(--section-padding);
   background: var(--white);
 }
-
-/*
-  Expected HTML inside each article:
-
-  <article>
-    <img class="harvest-image" src="assets/harvest-step-1.png" alt="...">
-    <div class="harvest-content">
-      <span class="step-number">01</span>
-      <h3>Early Harvest</h3>
-      <p>...</p>
-    </div>
-  </article>
-*/
 
 .harvest-steps {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 24px;
-
   width: 100%;
-  max-width: var(--page-width);
-  margin: 0 auto;
 }
 
 .harvest-steps article {
@@ -896,13 +902,16 @@ h3 {
 ================================================== */
 
 .quality-section {
-  display: grid;
-  grid-template-columns: minmax(260px, 0.85fr) minmax(0, 1.6fr);
-  gap: clamp(40px, 7vw, 90px);
-  align-items: center;
-  padding: var(--section-padding) clamp(24px, 8vw, 120px);
+  padding-block: var(--section-padding);
   color: var(--white);
   background: var(--blue);
+}
+
+.quality-section__inner {
+  display: grid;
+  grid-template-columns: minmax(260px, 0.85fr) minmax(0, 1.6fr);
+  gap: clamp(40px, 5vw, 72px);
+  align-items: center;
 }
 
 .quality-intro {
@@ -973,7 +982,7 @@ h3 {
 ================================================== */
 
 .tasting-section {
-  padding: var(--section-padding) clamp(24px, 8vw, 120px);
+  padding-block: var(--section-padding);
   background: var(--paper);
 }
 
@@ -984,11 +993,7 @@ h3 {
 .tasting-section .note-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-
   width: 100%;
-  max-width: 1000px;
-  margin: 0 auto;
-
   background: var(--white);
   border: 1px solid var(--gold-border);
 }
@@ -1075,7 +1080,7 @@ h3 {
 ================================================== */
 
 .uses-section {
-  padding: var(--section-padding) clamp(24px, 6vw, 80px);
+  padding-block: var(--section-padding);
   background: var(--white);
 }
 
@@ -1083,8 +1088,7 @@ h3 {
   display: grid;
   grid-template-columns: repeat(6, 1fr);
   gap: 24px;
-  max-width: 1120px;
-  margin: 0 auto;
+  width: 100%;
 }
 
 .uses-grid article {
@@ -1124,7 +1128,7 @@ h3 {
 ================================================== */
 
 .products {
-  padding: var(--section-padding) clamp(24px, 7vw, 100px);
+  padding-block: var(--section-padding);
   background: var(--cream);
 }
 
@@ -1132,8 +1136,7 @@ h3 {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 28px;
-  max-width: var(--page-width);
-  margin: 0 auto;
+  width: 100%;
 }
 
 .product {
@@ -1279,11 +1282,15 @@ h3 {
 ================================================== */
 
 .contact-section {
+  padding-block: var(--section-padding);
+  background: var(--paper);
+}
+
+.contact-section__inner {
   display: grid;
   grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
-  gap: clamp(45px, 8vw, 110px);
-  padding: var(--section-padding) clamp(24px, 9vw, 140px);
-  background: var(--paper);
+  gap: clamp(45px, 5vw, 80px);
+  align-items: start;
 }
 
 .contact-copy {
@@ -1378,7 +1385,7 @@ h3 {
   display: grid;
   grid-template-columns: 1.35fr repeat(3, 1fr);
   gap: 50px;
-  padding: 55px clamp(24px, 8vw, 120px) 40px;
+  padding-block: 55px 40px;
 }
 
 .brand-col {
@@ -1388,13 +1395,14 @@ h3 {
 
 .brand-col img {
   width: 160px;
+  height: auto;
   margin: 0 auto 20px;
 }
 
 .site-footer h4 {
   margin-bottom: 16px;
   color: var(--gold);
-  font: 600 15px var(--serif);
+  font: 600 1em var(--serif);
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
@@ -1404,7 +1412,7 @@ h3 {
   width: fit-content;
   margin-bottom: 8px;
   color: rgba(255, 255, 255, 0.82);
-  font: 14px / 1.45 var(--serif);
+  font: 0.9em / 1.25 var(--serif);
   transition: color var(--animation-fast) ease, transform var(--animation-fast) ease;
 }
 
@@ -1416,7 +1424,7 @@ h3 {
 
 .site-footer p {
   color: rgba(255, 255, 255, 0.82);
-  font: 14px / 1.55 var(--serif);
+  font: 0.9em / 1.25 var(--serif);
 }
 
 .newsletter {
@@ -1453,10 +1461,10 @@ h3 {
   display: flex;
   justify-content: space-between;
   gap: 22px;
-  padding: 14px clamp(24px, 6vw, 90px);
+  padding-block: 14px;
   border-top: 1px solid rgba(255, 255, 255, 0.2);
   color: rgba(255, 255, 255, 0.75);
-  font: 12px var(--serif);
+  font: 0.8em var(--serif);
 }
 
 /* ==================================================
@@ -1581,9 +1589,11 @@ h3 {
   }
 
   .site-header {
-    grid-template-columns: 1fr auto;
     height: 90px;
-    padding: 0 24px;
+  }
+
+  .site-header__inner {
+    grid-template-columns: 1fr auto;
   }
 
   .logo {
@@ -1643,16 +1653,14 @@ h3 {
   .menu-toggle.is-open span:nth-child(2) { opacity: 0; }
   .menu-toggle.is-open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
 
-  .hero {
+  .hero__inner {
     grid-template-columns: 1fr 0.48fr;
     min-height: 620px;
-    padding-right: 35px;
-    padding-left: 35px;
   }
 
   .hero-bottle { max-height: 470px; }
-  .quality-section,
-  .contact-section {
+  .quality-section__inner,
+  .contact-section__inner {
     grid-template-columns: 1fr;
   }
 
@@ -1744,7 +1752,7 @@ h3 {
   .topbar {
     gap: 9px;
     min-height: 34px;
-    font-size: 9px;
+    font-size: 0.7em;
     letter-spacing: 0.1em;
   }
 
@@ -1757,17 +1765,19 @@ h3 {
 
   .site-header {
     height: 78px;
-    padding: 0 18px;
   }
 
   .logo { width: 125px; }
 
-  .hero {
+  .hero__inner {
     display: flex;
     flex-direction: column;
     align-items: center;
     min-height: auto;
-    padding: 52px 20px 40px;
+  }
+
+  .hero {
+    padding-block: 52px 40px;
     overflow: hidden;
     text-align: center;
   }
@@ -1956,8 +1966,7 @@ h3 {
 
   .quality-grid strong { font-size: 27px; }
   .tasting-section {
-    padding-right: 20px;
-    padding-left: 20px;
+    padding-block: 70px;
   }
 
   .tasting-section .note-grid {
@@ -2008,8 +2017,7 @@ h3 {
     gap: 32px 20px;
   }
   .products {
-    padding-right: 20px;
-    padding-left: 20px;
+    padding-block: 70px;
   }
 
   .product-grid {
@@ -2155,7 +2163,7 @@ h3 {
   inset: 0;
   z-index: -2;
 
-  background-image: url("./assets/origin-line-art.png");
+  background-image: url("/textures/origin-line-art.png");
   background-repeat: no-repeat;
   background-position: center;
   background-size: cover;
