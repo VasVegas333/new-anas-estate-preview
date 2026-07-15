@@ -1,6 +1,6 @@
 @font-face {
   font-family: "Luthon Southard Script";
-  src: url("./assets/fonts/luthon-southard-script.otf") format("opentype");
+  src: url("/fonts/luthon-southard-script.otf") format("opentype");
   font-style: normal;
   font-weight: 400;
   font-display: swap;
@@ -144,7 +144,7 @@ h3 {
   width: 100%;
   height: 28px;
   background-color: var(--blue);
-  background-image: url("./assets/greek-key.svg");
+  background-image: url("/textures/greek-key.svg");
   background-repeat: repeat-x;
   background-position: left center;
   background-size: auto 15px;
@@ -657,7 +657,7 @@ h3 {
   inset: 0;
   z-index: 0;
 
-  background-image: url("./assets/origin-line-art.png");
+  background-image: url("/textures/origin-line-art.png");
   background-repeat: no-repeat;
   background-position: center center;
   background-size: cover;
@@ -752,19 +752,6 @@ h3 {
   padding: var(--section-padding) clamp(24px, 7vw, 100px);
   background: var(--white);
 }
-
-/*
-  Expected HTML inside each article:
-
-  <article>
-    <img class="harvest-image" src="assets/harvest-step-1.png" alt="...">
-    <div class="harvest-content">
-      <span class="step-number">01</span>
-      <h3>Early Harvest</h3>
-      <p>...</p>
-    </div>
-  </article>
-*/
 
 .harvest-steps {
   display: grid;
@@ -2155,7 +2142,7 @@ h3 {
   inset: 0;
   z-index: -2;
 
-  background-image: url("./assets/origin-line-art.png");
+  background-image: url("/textures/origin-line-art.png");
   background-repeat: no-repeat;
   background-position: center;
   background-size: cover;
