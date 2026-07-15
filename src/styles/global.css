@@ -139,10 +139,10 @@ h3 {
   justify-content: center;
   gap: 28px;
   min-height: 31px;
-  padding: 7px 16px;
+  padding: 8px 16px;
   color: var(--white);
   background: var(--blue);
-  font: 600 12px var(--serif);
+  font: 600 0.9em var(--serif);
   letter-spacing: 0.15em;
   text-align: center;
   text-transform: uppercase;
@@ -1751,7 +1751,7 @@ h3 {
   .topbar {
     gap: 9px;
     min-height: 34px;
-    font-size: 9px;
+    font-size: 0.7em;
     letter-spacing: 0.1em;
   }
 
