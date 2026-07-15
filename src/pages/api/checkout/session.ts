@@ -5,6 +5,7 @@ import {
   errorResponse,
   jsonResponse,
   parseJsonBody,
+  ValidationError,
 } from '../../../lib/api';
 import { fetchShippingRates } from '../../../lib/freightcom';
 import { buildRateRequest, findShippingOption, mapFreightcomRates } from '../../../lib/shipping';
@@ -49,8 +50,13 @@ export const POST: APIRoute = async ({ request }) => {
     return jsonResponse({ url });
   } catch (error) {
     console.error('Checkout session error:', error);
+
+    if (error instanceof ValidationError) {
+      return errorResponse('Please correct the highlighted fields.', 400, error.fieldErrors);
+    }
+
     const message = error instanceof Error ? error.message : 'Unable to start checkout';
-    const status = message === 'Invalid JSON body' || message.includes('Invalid') ? 400 : 502;
+    const status = message === 'Invalid JSON body' ? 400 : 502;
     return errorResponse(
       status === 400 ? message : 'Unable to start checkout. Please try again.',
       status,

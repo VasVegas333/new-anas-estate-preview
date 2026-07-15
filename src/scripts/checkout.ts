@@ -14,10 +14,17 @@ export type DestinationInput = {
   phone: string;
   addressLine1: string;
   addressLine2?: string;
-  unitNumber?: string;
   city: string;
   region: string;
   postalCode: string;
+  country: string;
+};
+
+type FieldErrors = Partial<Record<keyof DestinationInput, string>>;
+
+type ApiErrorResponse = {
+  error?: string;
+  fieldErrors?: FieldErrors;
 };
 
 export function formatCad(cents: number): string {
@@ -37,7 +44,6 @@ function getField(form: HTMLFormElement, name: string): string {
 
 export function readDestination(form: HTMLFormElement): DestinationInput {
   const addressLine2 = getField(form, 'addressLine2');
-  const unitNumber = getField(form, 'unitNumber');
 
   return {
     name: getField(form, 'name'),
@@ -45,10 +51,10 @@ export function readDestination(form: HTMLFormElement): DestinationInput {
     phone: getField(form, 'phone'),
     addressLine1: getField(form, 'addressLine1'),
     addressLine2: addressLine2 || undefined,
-    unitNumber: unitNumber || undefined,
     city: getField(form, 'city'),
     region: getField(form, 'region'),
     postalCode: getField(form, 'postalCode'),
+    country: getField(form, 'country'),
   };
 }
 
@@ -81,16 +87,117 @@ export function initCheckout(root: HTMLElement): void {
   let quoteId: string | null = null;
   let destination: DestinationInput | null = null;
   let selectedOption: ShippingQuoteOption | null = null;
+  let hasShippingRates = false;
+  let isLoading = false;
 
-  const setError = (message: string) => {
+  const regionSelect = addressForm.querySelector<HTMLSelectElement>('#checkout-region');
+  if (regionSelect) {
+    const defaultRegion = regionSelect.dataset.defaultRegion ?? 'ON';
+    regionSelect.value = defaultRegion;
+
+    regionSelect.addEventListener('change', () => {
+      regionSelect.dataset.userSelected = 'true';
+    });
+
+    // Browsers may autofill after initial render; restore the default unless the user chose a province.
+    window.setTimeout(() => {
+      if (regionSelect.dataset.userSelected !== 'true') {
+        regionSelect.value = defaultRegion;
+      }
+    }, 0);
+  }
+
+  const setFormError = (message: string) => {
     errorBox.textContent = message;
     errorBox.hidden = !message;
   };
 
+  const clearFieldErrors = () => {
+    addressForm.querySelectorAll<HTMLElement>('.checkout-field').forEach((field) => {
+      field.classList.remove('checkout-field--error');
+      const errorEl = field.querySelector<HTMLElement>('.checkout-field__error');
+      if (errorEl) {
+        errorEl.textContent = '';
+        errorEl.hidden = true;
+      }
+
+      const control = field.querySelector<HTMLInputElement | HTMLSelectElement>('input, select');
+      if (control) {
+        control.removeAttribute('aria-invalid');
+      }
+    });
+  };
+
+  const setFieldErrors = (fieldErrors: FieldErrors) => {
+    clearFieldErrors();
+
+    for (const [fieldName, message] of Object.entries(fieldErrors)) {
+      if (!message) continue;
+
+      const field = addressForm.querySelector<HTMLElement>(`[data-field="${fieldName}"]`);
+      if (!field) continue;
+
+      const errorEl = field.querySelector<HTMLElement>('.checkout-field__error');
+      field.classList.add('checkout-field--error');
+
+      if (errorEl) {
+        errorEl.textContent = message;
+        errorEl.hidden = false;
+      }
+
+      const control = field.querySelector<HTMLInputElement | HTMLSelectElement>('input, select');
+      if (control) {
+        control.setAttribute('aria-invalid', 'true');
+      }
+    }
+  };
+
+  const clearFieldError = (fieldName: string) => {
+    const field = addressForm.querySelector<HTMLElement>(`[data-field="${fieldName}"]`);
+    if (!field) return;
+
+    field.classList.remove('checkout-field--error');
+    const errorEl = field.querySelector<HTMLElement>('.checkout-field__error');
+    if (errorEl) {
+      errorEl.textContent = '';
+      errorEl.hidden = true;
+    }
+
+    const control = field.querySelector<HTMLInputElement | HTMLSelectElement>('input, select');
+    if (control) {
+      control.removeAttribute('aria-invalid');
+    }
+  };
+
+  addressForm.querySelectorAll<HTMLInputElement | HTMLSelectElement>('input, select').forEach(
+    (control) => {
+      control.addEventListener('input', () => {
+        const field = control.closest<HTMLElement>('[data-field]');
+        if (field?.dataset.field) {
+          clearFieldError(field.dataset.field);
+        }
+        setFormError('');
+      });
+
+      control.addEventListener('change', () => {
+        const field = control.closest<HTMLElement>('[data-field]');
+        if (field?.dataset.field) {
+          clearFieldError(field.dataset.field);
+        }
+        setFormError('');
+      });
+    },
+  );
+
+  const updatePayButton = () => {
+    payButton.disabled = isLoading || !hasShippingRates || !selectedOption;
+  };
+
   const setLoading = (loading: boolean, message = '') => {
+    isLoading = loading;
     shippingStatus.textContent = message;
     shippingStatus.hidden = !message;
-    payButton.disabled = loading || !selectedOption;
+    updatePayButton();
     addressForm.querySelectorAll('button, input, select').forEach((element) => {
       if (element instanceof HTMLButtonElement || element instanceof HTMLInputElement) {
         element.disabled = loading;
@@ -104,15 +211,30 @@ export function initCheckout(root: HTMLElement): void {
   const updateSummary = () => {
     summaryShipping.textContent = selectedOption
       ? formatCad(selectedOption.totalCents)
-      : 'Select a shipping method';
+      : 'Complete shipping details';
     summaryTotal.textContent = selectedOption
       ? formatCad(productPriceCents + selectedOption.totalCents)
       : formatCad(productPriceCents);
-    payButton.disabled = !selectedOption;
+    updatePayButton();
+  };
+
+  const clearShippingRates = () => {
+    hasShippingRates = false;
+    selectedOption = null;
+    quoteId = null;
+    shippingSection.hidden = true;
+    shippingOptions.innerHTML = '';
+    updateSummary();
   };
 
   const renderShippingOptions = (options: ShippingQuoteOption[]) => {
+    if (options.length === 0) {
+      clearShippingRates();
+      return;
+    }
+
     shippingOptions.innerHTML = '';
+    hasShippingRates = true;
 
     options.forEach((option, index) => {
       const label = document.createElement('label');
@@ -126,7 +248,7 @@ export function initCheckout(root: HTMLElement): void {
 
       const copy = document.createElement('div');
       const title = document.createElement('strong');
-      title.textContent = `${option.carrierName} — ${option.serviceName}`;
+      title.textContent = `${option.carrierName} | ${option.serviceName}`;
 
       const meta = document.createElement('span');
       const transit =
@@ -157,14 +279,11 @@ export function initCheckout(root: HTMLElement): void {
 
   addressForm.addEventListener('submit', async (event) => {
     event.preventDefault();
-    setError('');
+    setFormError('');
+    clearFieldErrors();
     destination = readDestination(addressForm);
-    selectedOption = null;
-    quoteId = null;
-    shippingSection.hidden = true;
-    shippingOptions.innerHTML = '';
-    updateSummary();
-    setLoading(true, 'Fetching live shipping rates…');
+    clearShippingRates();
+    setLoading(true, 'Fetching shipping rates…');
 
     try {
       const response = await fetch('/api/shipping/quotes', {
@@ -173,15 +292,25 @@ export function initCheckout(root: HTMLElement): void {
         body: JSON.stringify({ sku: productSku, destination }),
       });
 
-      const data = await response.json();
+      const data = (await response.json()) as ApiErrorResponse & {
+        quoteId?: string;
+        options?: ShippingQuoteOption[];
+      };
+
       if (!response.ok) {
+        if (data.fieldErrors && Object.keys(data.fieldErrors).length > 0) {
+          setFieldErrors(data.fieldErrors);
+          setFormError('');
+          return;
+        }
+
         throw new Error(data.error ?? 'Unable to fetch shipping rates');
       }
 
-      quoteId = data.quoteId;
-      renderShippingOptions(data.options as ShippingQuoteOption[]);
+      quoteId = data.quoteId ?? null;
+      renderShippingOptions(data.options ?? []);
     } catch (error) {
-      setError(error instanceof Error ? error.message : 'Unable to fetch shipping rates');
+      setFormError(error instanceof Error ? error.message : 'Unable to fetch shipping rates');
     } finally {
       setLoading(false);
     }
@@ -189,11 +318,12 @@ export function initCheckout(root: HTMLElement): void {
 
   payButton.addEventListener('click', async () => {
     if (!destination || !selectedOption || !quoteId) {
-      setError('Please calculate shipping before continuing to payment.');
+      setFormError('Complete your shipping details and select a shipping method to continue.');
       return;
     }
 
-    setError('');
+    setFormError('');
+    clearFieldErrors();
     setLoading(true, 'Redirecting to secure payment…');
 
     try {
@@ -208,15 +338,27 @@ export function initCheckout(root: HTMLElement): void {
         }),
       });
 
-      const data = await response.json();
+      const data = (await response.json()) as ApiErrorResponse & { url?: string };
+
       if (!response.ok) {
+        if (data.fieldErrors && Object.keys(data.fieldErrors).length > 0) {
+          setFieldErrors(data.fieldErrors);
+          setFormError('');
+          setLoading(false);
+          return;
+        }
+
         throw new Error(data.error ?? 'Unable to start checkout');
+      }
+
+      if (!data.url) {
+        throw new Error('Unable to start checkout');
       }
 
       window.location.href = data.url;
     } catch (error) {
       setLoading(false);
-      setError(error instanceof Error ? error.message : 'Unable to start checkout');
+      setFormError(error instanceof Error ? error.message : 'Unable to start checkout');
     }
   });
 

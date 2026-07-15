@@ -33,7 +33,7 @@ export const PRODUCTS: Record<ProductSku, Product> = {
     image: images.heroBottle,
     priceCents: 6500,
     schemaId: '750ml-bottle',
-    schemaName: 'Ana’s Estate Kalamata PDO Extra Virgin Olive Oil — 750 ml',
+    schemaName: 'Ana’s Estate Kalamata PDO Extra Virgin Olive Oil - 750 ml',
     schemaDescription:
       'Premium single-estate Kalamata PDO Extra Virgin Olive Oil, cold extracted from early-harvest Koroneiki olives grown in Kalamata, Greece.',
     schemaSize: '750 ml',
@@ -53,7 +53,7 @@ export const PRODUCTS: Record<ProductSku, Product> = {
     image: images.caseOf12,
     priceCents: 72000,
     schemaId: 'case-of-12',
-    schemaName: 'Ana’s Estate Kalamata PDO Extra Virgin Olive Oil — Case of 12',
+    schemaName: 'Ana’s Estate Kalamata PDO Extra Virgin Olive Oil - Case of 12',
     schemaDescription:
       'A family estate case containing twelve 750 ml bottles of Ana’s Estate Kalamata PDO Extra Virgin Olive Oil.',
     schemaSize: '12 × 750 ml',

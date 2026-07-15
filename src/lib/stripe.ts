@@ -42,7 +42,7 @@ export async function createCheckoutSession({
         price_data: {
           currency: 'cad',
           product_data: {
-            name: `Shipping — ${shipping.carrierName} ${shipping.serviceName}`,
+            name: `Shipping | ${shipping.carrierName} ${shipping.serviceName}`,
           },
           unit_amount: shipping.totalCents,
         },

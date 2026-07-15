@@ -8,10 +8,10 @@ export type ShippingDestination = {
   phone: string;
   addressLine1: string;
   addressLine2?: string;
-  unitNumber?: string;
   city: string;
   region: string;
   postalCode: string;
+  country: 'CA';
 };
 
 export type ShippingOption = {
@@ -73,10 +73,9 @@ function buildLocation(
     address: {
       address_line_1: destination.addressLine1,
       address_line_2: destination.addressLine2,
-      unit_number: destination.unitNumber,
       city: destination.city,
       region: destination.region.toUpperCase(),
-      country: 'CA',
+      country: destination.country,
       postal_code: normalizePostalCode(destination.postalCode),
     },
     residential,
@@ -161,7 +160,6 @@ export function formatAddress(destination: ShippingDestination): string {
     destination.name,
     destination.addressLine1,
     destination.addressLine2,
-    destination.unitNumber ? `Unit ${destination.unitNumber}` : undefined,
     `${destination.city}, ${destination.region.toUpperCase()} ${normalizePostalCode(destination.postalCode)}`,
     'Canada',
   ].filter(Boolean);

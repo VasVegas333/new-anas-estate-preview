@@ -1,6 +1,6 @@
 import type { APIRoute } from 'astro';
 import { getProduct } from '../../../data/products';
-import { errorResponse, jsonResponse, parseJsonBody, quoteRequestSchema } from '../../../lib/api';
+import { errorResponse, jsonResponse, parseJsonBody, quoteRequestSchema, ValidationError } from '../../../lib/api';
 import { fetchShippingRates } from '../../../lib/freightcom';
 import { buildRateRequest, mapFreightcomRates } from '../../../lib/shipping';
 
@@ -34,8 +34,13 @@ export const POST: APIRoute = async ({ request }) => {
     });
   } catch (error) {
     console.error('Shipping quote error:', error);
+
+    if (error instanceof ValidationError) {
+      return errorResponse('Please correct the highlighted fields.', 400, error.fieldErrors);
+    }
+
     const message = error instanceof Error ? error.message : 'Unable to fetch shipping rates';
-    const status = message === 'Invalid JSON body' || message.includes('Invalid') ? 400 : 502;
+    const status = message === 'Invalid JSON body' ? 400 : 502;
     return errorResponse(
       status === 400 ? message : 'Unable to fetch shipping rates. Please try again.',
       status,

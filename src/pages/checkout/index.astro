@@ -19,8 +19,8 @@ const checkoutProduct = product
 ---
 
 <BaseLayout
-  title={checkoutProduct ? `Checkout — ${checkoutProduct.name} | Ana’s Estate` : 'Checkout | Ana’s Estate'}
-  description="Complete your Ana’s Estate olive oil order with live Canadian shipping rates."
+  title="Checkout | Ana’s Estate"
+  description="Complete your Anas Estate order."
   canonical={`${SITE.url}/checkout`}
 >
   <main class="checkout-page">
@@ -44,8 +44,7 @@ const checkoutProduct = product
                 ◇
               </div>
               <p>
-                Enter your Canadian shipping address to see live carrier rates, then continue to secure
-                payment.
+                Enter your information below for final order details.
               </p>
             </div>
 
@@ -56,56 +55,75 @@ const checkoutProduct = product
               data-price-cents={checkoutProduct.priceCents}
             >
               <div class="checkout-panel">
-                <h2>Shipping Address</h2>
+                <h2>Shipping Details</h2>
                 <form id="checkout-address-form" class="checkout-form" novalidate>
-                  <label for="checkout-name">Full name</label>
-                  <input id="checkout-name" name="name" autocomplete="name" required />
-
-                  <label for="checkout-email">Email</label>
-                  <input
-                    id="checkout-email"
-                    name="email"
-                    type="email"
-                    autocomplete="email"
-                    required
-                  />
-
-                  <label for="checkout-phone">Phone</label>
-                  <input
-                    id="checkout-phone"
-                    name="phone"
-                    type="tel"
-                    autocomplete="tel"
-                    required
-                  />
-
-                  <label for="checkout-address-line-1">Street address</label>
-                  <input
-                    id="checkout-address-line-1"
-                    name="addressLine1"
-                    autocomplete="address-line1"
-                    required
-                  />
-
-                  <label for="checkout-address-line-2">Apartment, suite, etc. (optional)</label>
-                  <input
-                    id="checkout-address-line-2"
-                    name="addressLine2"
-                    autocomplete="address-line2"
-                  />
-
-                  <label for="checkout-unit">Unit (optional)</label>
-                  <input id="checkout-unit" name="unitNumber" />
+                  <div class="checkout-field" data-field="name">
+                    <label for="checkout-name">Full name</label>
+                    <input id="checkout-name" name="name" autocomplete="name" required />
+                    <p class="checkout-field__error" role="alert" hidden></p>
+                  </div>
 
                   <div class="checkout-form__row">
-                    <div>
+                    <div class="checkout-field" data-field="email">
+                      <label for="checkout-email">Email</label>
+                      <input
+                        id="checkout-email"
+                        name="email"
+                        type="email"
+                        autocomplete="email"
+                        required
+                      />
+                      <p class="checkout-field__error" role="alert" hidden></p>
+                    </div>
+                    <div class="checkout-field" data-field="phone">
+                      <label for="checkout-phone">Phone</label>
+                      <input
+                        id="checkout-phone"
+                        name="phone"
+                        type="tel"
+                        autocomplete="tel"
+                        required
+                      />
+                      <p class="checkout-field__error" role="alert" hidden></p>
+                    </div>
+                  </div>
+
+                  <div class="checkout-field" data-field="addressLine1">
+                    <label for="checkout-address-line-1">Street address</label>
+                    <input
+                      id="checkout-address-line-1"
+                      name="addressLine1"
+                      autocomplete="address-line1"
+                      required
+                    />
+                    <p class="checkout-field__error" role="alert" hidden></p>
+                  </div>
+
+                  <div class="checkout-field" data-field="addressLine2">
+                    <label for="checkout-address-line-2">Apartment, suite, or unit (optional)</label>
+                    <input
+                      id="checkout-address-line-2"
+                      name="addressLine2"
+                      autocomplete="address-line2"
+                    />
+                    <p class="checkout-field__error" role="alert" hidden></p>
+                  </div>
+
+                  <div class="checkout-form__row">
+                    <div class="checkout-field" data-field="city">
                       <label for="checkout-city">City</label>
                       <input id="checkout-city" name="city" autocomplete="address-level2" required />
+                      <p class="checkout-field__error" role="alert" hidden></p>
                     </div>
-                    <div>
+                    <div class="checkout-field" data-field="region">
                       <label for="checkout-region">Province</label>
-                      <select id="checkout-region" name="region" autocomplete="address-level1" required>
-                        <option value="">Select</option>
+                      <select
+                        id="checkout-region"
+                        name="region"
+                        autocomplete="address-level1"
+                        required
+                        data-default-region="ON"
+                      >
                         <option value="AB">Alberta</option>
                         <option value="BC">British Columbia</option>
                         <option value="MB">Manitoba</option>
@@ -114,24 +132,43 @@ const checkoutProduct = product
                         <option value="NS">Nova Scotia</option>
                         <option value="NT">Northwest Territories</option>
                         <option value="NU">Nunavut</option>
-                        <option value="ON">Ontario</option>
+                        <option value="ON" selected={true}>Ontario</option>
                         <option value="PE">Prince Edward Island</option>
                         <option value="QC">Quebec</option>
                         <option value="SK">Saskatchewan</option>
                         <option value="YT">Yukon</option>
                       </select>
+                      <p class="checkout-field__error" role="alert" hidden></p>
                     </div>
                   </div>
 
-                  <label for="checkout-postal-code">Postal code</label>
-                  <input
-                    id="checkout-postal-code"
-                    name="postalCode"
-                    autocomplete="postal-code"
-                    required
-                  />
+                  <div class="checkout-form__row">
+                    <div class="checkout-field" data-field="postalCode">
+                      <label for="checkout-postal-code">Postal code</label>
+                      <input
+                        id="checkout-postal-code"
+                        name="postalCode"
+                        autocomplete="postal-code"
+                        required
+                      />
+                      <p class="checkout-field__error" role="alert" hidden></p>
+                    </div>
+                    <div class="checkout-field" data-field="country">
+                      <label for="checkout-country">Country</label>
+                      <select
+                        id="checkout-country"
+                        name="country"
+                        autocomplete="country"
+                        required
+                        disabled
+                      >
+                        <option value="CA" selected={true}>Canada</option>
+                      </select>
+                      <p class="checkout-field__error" role="alert" hidden></p>
+                    </div>
+                  </div>
 
-                  <button class="btn" type="submit">Get shipping rates</button>
+                  <button class="btn" type="submit">Continue</button>
                 </form>
 
                 <div id="checkout-shipping" class="checkout-shipping" hidden>
@@ -156,7 +193,7 @@ const checkoutProduct = product
                   </div>
                   <div>
                     <dt>Shipping</dt>
-                    <dd id="summary-shipping">Select a shipping method</dd>
+                    <dd id="summary-shipping">Complete shipping details</dd>
                   </div>
                   <div class="checkout-summary__total">
                     <dt>Total</dt>
@@ -164,11 +201,11 @@ const checkoutProduct = product
                   </div>
                 </dl>
                 <button id="checkout-pay" class="btn" type="button" disabled>
-                  Continue to payment
+                  Checkout
                 </button>
                 <p class="checkout-summary__note">
-                  You will complete payment securely on Stripe. Shipping is quoted in Canadian
-                  dollars for destinations within Canada.
+                  You will complete checkout securely on Stripe. All prices are in Canadian
+                  dollars.
                 </p>
               </aside>
             </div>
