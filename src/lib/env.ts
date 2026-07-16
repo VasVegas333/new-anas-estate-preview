@@ -2,8 +2,6 @@ import { z } from 'zod';
 
 const envSchema = z.object({
   STRIPE_SECRET_KEY: z.string().min(1),
-  STRIPE_PRICE_BOTTLE: z.string().startsWith('price_'),
-  STRIPE_PRICE_CASE_OF_12: z.string().startsWith('price_'),
   FREIGHTCOM_API_KEY: z.string().min(1),
   FREIGHTCOM_API_BASE: z.url(),
   SHIPPING_MARKUP_PERCENT: z.coerce.number().min(0).default(15),
@@ -36,9 +34,4 @@ export function getEnv(): Env {
 
   cachedEnv = parsed.data;
   return cachedEnv;
-}
-
-export function getStripePriceIds(): string[] {
-  const env = getEnv();
-  return [env.STRIPE_PRICE_BOTTLE, env.STRIPE_PRICE_CASE_OF_12];
 }

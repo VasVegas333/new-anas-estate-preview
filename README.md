@@ -75,16 +75,17 @@ Checkout uses an on-site flow at `/checkout?sku=bottle` or `/checkout?sku=case-o
 
 ### Stripe Dashboard setup
 
-Before going live, create Stripe Products and Prices in CAD. Map each sellable price to an env variable:
-
-| Product | Price | Env variable |
-| --- | --- | --- |
-| Estate 750ml Bottle | $65.00 CAD | `STRIPE_PRICE_BOTTLE` |
-| Family Estate Pack of 12 | $720.00 CAD | `STRIPE_PRICE_CASE_OF_12` |
+Create active Stripe Products in CAD with a one-time default price. The site loads every active product from your Stripe account at request time — no per-product env variables needed.
 
 Use a [restricted API key](https://docs.stripe.com/keys/restricted-api-keys) with Checkout Sessions write access plus Products and Prices read access for `STRIPE_SECRET_KEY`.
 
-The shop, checkout, and homepage schema load product name, description, image, and price from Stripe at request time. Stripe is the source of truth for catalog content and pricing.
+A product appears in the shop when it is:
+
+- Active in Stripe
+- Has an active CAD one-time default price
+- Includes the required metadata below
+
+The shop, checkout, and homepage schema use Stripe for product name, description, image, and price.
 
 Each Stripe Product also needs metadata for checkout and shipping:
 
@@ -109,7 +110,7 @@ Retire the old Payment Links once the new checkout flow is live.
 
 Copy `.env.example` to `.env` and configure:
 
-- `STRIPE_SECRET_KEY`, `STRIPE_PRICE_BOTTLE`, `STRIPE_PRICE_CASE_OF_12`
+- `STRIPE_SECRET_KEY`
 - `FREIGHTCOM_API_KEY`, `FREIGHTCOM_API_BASE`
 - `SHIPPING_MARKUP_PERCENT`
 - Ship-from address fields (`SHIP_FROM_*`)

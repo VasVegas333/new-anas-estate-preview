@@ -1,5 +1,4 @@
 import type Stripe from 'stripe';
-import { getStripePriceIds } from './env';
 import { getStripe } from './stripe';
 
 export type Product = {
@@ -38,14 +37,11 @@ export async function getProducts(): Promise<Product[]> {
   }
 
   const stripe = getStripe();
-  const prices = await Promise.all(
-    getStripePriceIds().map((priceId) =>
-      stripe.prices.retrieve(priceId, { expand: ['product'] }),
-    ),
-  );
+  const prices = await listCatalogPrices(stripe);
 
   cachedProducts = prices
     .map((price) => mapStripePriceToProduct(price))
+    .filter((product): product is Product => product !== null)
     .sort((a, b) => a.sortOrder - b.sortOrder || a.name.localeCompare(b.name));
 
   return cachedProducts;
@@ -59,37 +55,79 @@ export async function getProduct(
   return products.find((product) => product.sku === sku);
 }
 
-function mapStripePriceToProduct(price: Stripe.Price): Product {
+async function listCatalogPrices(stripe: Stripe): Promise<Stripe.Price[]> {
+  const prices: Stripe.Price[] = [];
+
+  for await (const stripeProduct of stripe.products.list({
+    active: true,
+    expand: ['data.default_price'],
+  })) {
+    if (stripeProduct.deleted) continue;
+
+    const defaultPrice = stripeProduct.default_price;
+    if (!defaultPrice || typeof defaultPrice === 'string') {
+      console.warn(`Stripe product ${stripeProduct.id} is missing a default price, skipping`);
+      continue;
+    }
+
+    if (!defaultPrice.active || defaultPrice.currency !== 'cad' || defaultPrice.type !== 'one_time') {
+      continue;
+    }
+
+    if (defaultPrice.unit_amount == null) {
+      console.warn(`Stripe product ${stripeProduct.id} default price has no unit_amount, skipping`);
+      continue;
+    }
+
+    prices.push({
+      ...defaultPrice,
+      product: stripeProduct,
+    });
+  }
+
+  return prices;
+}
+
+function mapStripePriceToProduct(price: Stripe.Price): Product | null {
   const stripeProduct = price.product;
   if (!stripeProduct || typeof stripeProduct === 'string' || stripeProduct.deleted) {
-    throw new Error(`Stripe price ${price.id} is missing an expanded product`);
+    console.warn(`Stripe price ${price.id} is missing an expanded product, skipping`);
+    return null;
   }
 
   if (price.unit_amount == null) {
-    throw new Error(`Stripe price ${price.id} has no unit_amount`);
+    console.warn(`Stripe price ${price.id} has no unit_amount, skipping`);
+    return null;
   }
 
   const metadata = stripeProduct.metadata;
   const sku = metadata.sku?.trim();
   if (!sku) {
-    throw new Error(`Stripe product ${stripeProduct.id} is missing metadata.sku`);
+    console.warn(`Stripe product ${stripeProduct.id} is missing metadata.sku, skipping`);
+    return null;
   }
 
-  return {
-    sku,
-    name: stripeProduct.name,
-    description: stripeProduct.description ?? '',
-    format: metadata.format?.trim() || stripeProduct.name,
-    imageUrl: stripeProduct.images[0],
-    imageAlt: metadata.image_alt?.trim() || stripeProduct.name,
-    priceCents: price.unit_amount,
-    stripePriceId: price.id,
-    stripeProductId: stripeProduct.id,
-    schemaId: metadata.schema_id?.trim() || sku,
-    schemaSize: metadata.schema_size?.trim() || undefined,
-    package: parsePackageMetadata(metadata, stripeProduct.id),
-    sortOrder: parseSortOrder(metadata.sort_order),
-  };
+  try {
+    return {
+      sku,
+      name: stripeProduct.name,
+      description: stripeProduct.description ?? '',
+      format: metadata.format?.trim() || stripeProduct.name,
+      imageUrl: stripeProduct.images[0],
+      imageAlt: metadata.image_alt?.trim() || stripeProduct.name,
+      priceCents: price.unit_amount,
+      stripePriceId: price.id,
+      stripeProductId: stripeProduct.id,
+      schemaId: metadata.schema_id?.trim() || sku,
+      schemaSize: metadata.schema_size?.trim() || undefined,
+      package: parsePackageMetadata(metadata, stripeProduct.id),
+      sortOrder: parseSortOrder(metadata.sort_order),
+    };
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Invalid product metadata';
+    console.warn(`Stripe product ${stripeProduct.id} could not be loaded: ${message}`);
+    return null;
+  }
 }
 
 function parsePackageMetadata(
@@ -111,7 +149,7 @@ function parsePositiveNumber(
 ): number {
   const parsed = Number.parseFloat(value ?? '');
   if (!Number.isFinite(parsed) || parsed <= 0) {
-    throw new Error(`Stripe product ${productId} is missing valid metadata.${fieldName}`);
+    throw new Error(`missing valid metadata.${fieldName}`);
   }
   return parsed;
 }
