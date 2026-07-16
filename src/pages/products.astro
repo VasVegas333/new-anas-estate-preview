@@ -1,9 +1,9 @@
 ---
-import BaseLayout from '../layouts/BaseLayout.astro';
-import PageHero from '../components/PageHero.astro';
-import SectionContainer from '../components/SectionContainer.astro';
-import { formatPrice, getProducts } from '../lib/catalog';
-import { SITE } from '../config/site';
+import BaseLayout from "../layouts/BaseLayout.astro";
+import PageHero from "../components/PageHero.astro";
+import SectionContainer from "../components/SectionContainer.astro";
+import { formatPrice, getProducts } from "../lib/catalog";
+import { SITE } from "../config/site";
 
 const products = await getProducts();
 ---
@@ -21,14 +21,32 @@ const products = await getProducts();
       description="Choose the format that best suits your table, kitchen or foodservice needs."
     />
 
-    <section class="products products--subpage" id="products" aria-label="Our Olive Oil">
+    <section
+      class="products products--subpage"
+      id="products"
+      aria-label="Our Olive Oil"
+    >
       <SectionContainer>
-        <div class="product-grid reveal-group">
-          {
-            products.map((product) => (
-              <article class="product">
-                {
-                  product.imageUrl ? (
+        {
+          products.length === 0 ? (
+            <div class="products-empty reveal">
+              <h2>Products unavailable</h2>
+              <div class="ornament" aria-hidden="true">
+                ◇
+              </div>
+              <p>
+                Please check back soon or get in touch if you would like to
+                place an order.
+              </p>
+              <a class="btn" href="/contact">
+                Contact us
+              </a>
+            </div>
+          ) : (
+            <div class="product-grid reveal-group">
+              {products.map((product) => (
+                <article class="product">
+                  {product.imageUrl ? (
                     <img
                       src={product.imageUrl}
                       alt={product.imageAlt}
@@ -36,26 +54,26 @@ const products = await getProducts();
                       width="640"
                       height="640"
                     />
-                  ) : null
-                }
-                <div>
-                  <p class="product-format">{product.format}</p>
-                  <h3>{product.name}</h3>
-                  <ul>
-                    <li>Koroneiki Monovarietal</li>
-                    <li>Early Harvest</li>
-                    <li>Cold Extracted</li>
-                    <li>PDO Kalamata</li>
-                  </ul>
-                  <div class="price">{formatPrice(product.priceCents)}</div>
-                  <a class="btn" href={`/checkout?sku=${product.sku}`}>
-                    Buy Now
-                  </a>
-                </div>
-              </article>
-            ))
-          }
-        </div>
+                  ) : null}
+                  <div>
+                    <p class="product-format">{product.format}</p>
+                    <h3>{product.name}</h3>
+                    <ul>
+                      <li>Koroneiki Monovarietal</li>
+                      <li>Early Harvest</li>
+                      <li>Cold Extracted</li>
+                      <li>PDO Kalamata</li>
+                    </ul>
+                    <div class="price">{formatPrice(product.priceCents)}</div>
+                    <a class="btn" href={`/checkout?sku=${product.sku}`}>
+                      Buy Now
+                    </a>
+                  </div>
+                </article>
+              ))}
+            </div>
+          )
+        }
       </SectionContainer>
     </section>
   </main>

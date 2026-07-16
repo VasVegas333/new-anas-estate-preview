@@ -1136,6 +1136,26 @@ h3 {
   padding-top: clamp(32px, 5vw, 64px);
 }
 
+.products-empty {
+  width: min(640px, 100%);
+  margin-inline: auto;
+  padding: clamp(32px, 6vw, 64px) 24px;
+  text-align: center;
+}
+
+.products-empty h2 {
+  margin: 0 0 16px;
+  color: var(--blue);
+  font: 600 clamp(32px, 4vw, 48px) / 1 var(--serif);
+}
+
+.products-empty p:not(.section-label) {
+  margin: 0 0 28px;
+  color: var(--body-text);
+  font-size: 18px;
+  line-height: 1.6;
+}
+
 .product-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
