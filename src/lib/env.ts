@@ -1,3 +1,6 @@
+import { existsSync } from 'node:fs';
+import { loadEnvFile } from 'node:process';
+import { resolve } from 'node:path';
 import { z } from 'zod';
 
 const envSchema = z.object({
@@ -20,9 +23,22 @@ const envSchema = z.object({
 export type Env = z.infer<typeof envSchema>;
 
 let cachedEnv: Env | undefined;
+let envFileLoaded = false;
+
+function ensureEnvFileLoaded(): void {
+  if (envFileLoaded) return;
+  envFileLoaded = true;
+
+  const envPath = resolve(process.cwd(), '.env');
+  if (existsSync(envPath)) {
+    loadEnvFile(envPath);
+  }
+}
 
 export function getEnv(): Env {
   if (cachedEnv) return cachedEnv;
+
+  ensureEnvFileLoaded();
 
   const parsed = envSchema.safeParse(process.env);
   if (!parsed.success) {
