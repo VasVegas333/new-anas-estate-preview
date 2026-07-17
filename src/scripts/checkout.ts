@@ -64,6 +64,7 @@ export function initCheckout(root: HTMLElement): void {
   const shippingStatus = root.querySelector<HTMLElement>('#shipping-status');
   const summaryShipping = root.querySelector<HTMLElement>('#summary-shipping');
   const summaryTotal = root.querySelector<HTMLElement>('#summary-total');
+  const continueButton = addressForm?.querySelector<HTMLButtonElement>('button[type="submit"]');
   const payButton = root.querySelector<HTMLButtonElement>('#checkout-pay');
   const errorBox = root.querySelector<HTMLElement>('#checkout-error');
 
@@ -75,6 +76,7 @@ export function initCheckout(root: HTMLElement): void {
     !shippingStatus ||
     !summaryShipping ||
     !summaryTotal ||
+    !continueButton ||
     !payButton ||
     !errorBox
   ) {
@@ -191,6 +193,15 @@ export function initCheckout(root: HTMLElement): void {
     payButton.disabled = isLoading || !hasShippingRates || !selectedOption;
   };
 
+  const setContinueLoading = (loading: boolean) => {
+    continueButton.textContent = loading ? 'Loading…' : 'Continue';
+    if (loading) {
+      continueButton.setAttribute('aria-busy', 'true');
+    } else {
+      continueButton.removeAttribute('aria-busy');
+    }
+  };
+
   const setLoading = (loading: boolean, message = '') => {
     isLoading = loading;
     shippingStatus.textContent = message;
@@ -282,6 +293,7 @@ export function initCheckout(root: HTMLElement): void {
     destination = readDestination(addressForm);
     clearShippingRates();
     setLoading(true, 'Fetching shipping rates…');
+    setContinueLoading(true);
 
     try {
       const response = await fetch('/api/shipping/quotes', {
@@ -310,6 +322,7 @@ export function initCheckout(root: HTMLElement): void {
     } catch (error) {
       setFormError(error instanceof Error ? error.message : 'Unable to fetch shipping rates');
     } finally {
+      setContinueLoading(false);
       setLoading(false);
     }
   });
