@@ -56,14 +56,27 @@ const products = await getProducts();
                     />
                   ) : null}
                   <div>
-                    <p class="product-format">{product.format}</p>
+                    {product.format ? (
+                      <p class="product-format">{product.format}</p>
+                    ) : null}
                     <h3>{product.name}</h3>
-                    <ul>
-                      <li>Koroneiki Monovarietal</li>
-                      <li>Early Harvest</li>
-                      <li>Cold Extracted</li>
-                      <li>PDO Kalamata</li>
-                    </ul>
+                    {product.description ? (
+                      <p class="product-description">{product.description}</p>
+                    ) : null}
+                    {product.features ? (
+                      <ul>
+                        {product.features.map((feature) => (
+                          <li>{feature}</li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <ul>
+                        <li>Koroneiki Monovarietal</li>
+                        <li>Early Harvest</li>
+                        <li>Cold Extracted</li>
+                        <li>PDO Kalamata</li>
+                      </ul>
+                    )}
                     <div class="price">{formatPrice(product.priceCents)}</div>
                     <a class="btn" href={`/checkout?sku=${product.sku}`}>
                       Buy Now

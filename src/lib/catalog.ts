@@ -4,9 +4,10 @@ import { getStripe } from './stripe';
 export type Product = {
   sku: string;
   name: string;
-  description: string;
-  format: string;
-  imageUrl: string | undefined;
+  description?: string;
+  features?: string[];
+  format?: string;
+  imageUrl?: string;
   priceCents: number;
   stripePriceId: string;
   stripeProductId: string;
@@ -108,8 +109,9 @@ function mapStripePriceToProduct(price: Stripe.Price): Product | null {
     return {
       sku,
       name: stripeProduct.name,
-      description: stripeProduct.description ?? '',
-      format: metadata.format?.trim() || stripeProduct.name,
+      description: stripeProduct.description ?? undefined,
+      features: metadata.features?.split(',').map((feature) => feature.trim()) || undefined,
+      format: metadata.format?.trim() || undefined,
       imageUrl: stripeProduct.images[0],
       priceCents: price.unit_amount,
       stripePriceId: price.id,

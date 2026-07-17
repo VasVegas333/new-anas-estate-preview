@@ -1226,6 +1226,14 @@ h3 {
   text-transform: uppercase;
 }
 
+.product-description {
+  margin: 0.25em 0 1em;
+  color: var(--body-text);
+  font-family: var(--serif);
+  font-size: 1em;
+  line-height: 1.6;
+}
+
 .product h3 {
   font-size: 25px;
 }
@@ -1237,6 +1245,10 @@ h3 {
   color: var(--body-text);
   font-family: var(--serif);
   text-align: left;
+}
+
+.product ul li {
+  list-style: square
 }
 
 .price {
