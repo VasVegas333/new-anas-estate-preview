@@ -69,7 +69,7 @@ export async function getHomeJsonLd() {
       },
       ...products.map((product) => ({
         '@type': 'Product',
-        '@id': `${SITE.url}/#${product.schemaId}`,
+        '@id': `${SITE.url}/#${product.sku}`,
         name: product.name,
         description: product.description,
         image: product.imageUrl ? [product.imageUrl] : undefined,
@@ -77,7 +77,6 @@ export async function getHomeJsonLd() {
         manufacturer: { '@id': `${SITE.url}/#organization` },
         category: 'Extra Virgin Olive Oil',
         countryOfOrigin: { '@type': 'Country', name: 'Greece' },
-        size: product.schemaSize,
         itemCondition: 'https://schema.org/NewCondition',
         offers: {
           '@type': 'Offer',

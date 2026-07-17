@@ -7,12 +7,9 @@ export type Product = {
   description: string;
   format: string;
   imageUrl: string | undefined;
-  imageAlt: string;
   priceCents: number;
   stripePriceId: string;
   stripeProductId: string;
-  schemaId: string;
-  schemaSize: string | undefined;
   package: {
     weightLb: number;
     lengthIn: number;
@@ -101,7 +98,7 @@ function mapStripePriceToProduct(price: Stripe.Price): Product | null {
   }
 
   const metadata = stripeProduct.metadata;
-  const sku = metadata.sku?.trim();
+  const sku = metadata.sku?.trim() ?? stripeProduct.id.replace('prod_', '');
   if (!sku) {
     console.warn(`Stripe product ${stripeProduct.id} is missing metadata.sku, skipping`);
     return null;
@@ -114,12 +111,9 @@ function mapStripePriceToProduct(price: Stripe.Price): Product | null {
       description: stripeProduct.description ?? '',
       format: metadata.format?.trim() || stripeProduct.name,
       imageUrl: stripeProduct.images[0],
-      imageAlt: metadata.image_alt?.trim() || stripeProduct.name,
       priceCents: price.unit_amount,
       stripePriceId: price.id,
       stripeProductId: stripeProduct.id,
-      schemaId: metadata.schema_id?.trim() || sku,
-      schemaSize: metadata.schema_size?.trim() || undefined,
       package: parsePackageMetadata(metadata, stripeProduct.id),
       sortOrder: parseSortOrder(metadata.sort_order),
     };
@@ -149,7 +143,8 @@ function parsePositiveNumber(
 ): number {
   const parsed = Number.parseFloat(value ?? '');
   if (!Number.isFinite(parsed) || parsed <= 0) {
-    throw new Error(`missing valid metadata.${fieldName}`);
+    console.warn(`Stripe product ${productId} metadata.${fieldName} is not a positive number, setting to 1`);
+    return 1;
   }
   return parsed;
 }
