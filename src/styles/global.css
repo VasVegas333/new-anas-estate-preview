@@ -2583,19 +2583,12 @@ h3 {
 
 .shipping-option {
   display: grid;
-  grid-template-columns: auto 1fr;
+  grid-template-columns: 1fr;
   gap: 12px;
   align-items: start;
   padding: 14px 16px;
   border: 1px solid var(--gold-border);
   background: var(--paper);
-  cursor: pointer;
-}
-
-.shipping-option:has(input:checked) {
-  border-color: var(--gold);
-  background: var(--white);
-  box-shadow: 0 0 0 3px rgba(185, 138, 61, 0.08);
 }
 
 .shipping-option strong {

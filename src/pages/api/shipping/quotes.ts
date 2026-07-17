@@ -16,7 +16,7 @@ export const POST: APIRoute = async ({ request }) => {
 
     const rateRequest = buildRateRequest(product, destination);
     const { requestId, rates } = await fetchShippingRates(rateRequest);
-    const options = mapFreightcomRates(rates);
+    const options = mapFreightcomRates(rates).slice(0, 3);
 
     if (options.length === 0) {
       return errorResponse('No shipping options are available for this address', 422);

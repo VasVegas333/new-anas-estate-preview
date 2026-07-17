@@ -8,14 +8,14 @@ import {
   ValidationError,
 } from '../../../lib/api';
 import { fetchShippingRates } from '../../../lib/freightcom';
-import { buildRateRequest, findShippingOption, mapFreightcomRates } from '../../../lib/shipping';
+import { buildRateRequest, mapFreightcomRates } from '../../../lib/shipping';
 import { createCheckoutSession } from '../../../lib/stripe';
 
 export const prerender = false;
 
 export const POST: APIRoute = async ({ request }) => {
   try {
-    const { sku, destination, serviceId, quoteId } = await parseJsonBody(
+    const { sku, destination, quoteId } = await parseJsonBody(
       request,
       checkoutSessionSchema,
     );
@@ -26,11 +26,10 @@ export const POST: APIRoute = async ({ request }) => {
 
     const rateRequest = buildRateRequest(product, destination);
     const { requestId, rates } = await fetchShippingRates(rateRequest);
-    const options = mapFreightcomRates(rates);
-    const shipping = findShippingOption(options, serviceId);
+    const shippingOptions = mapFreightcomRates(rates).slice(0, 3);
 
-    if (!shipping) {
-      return errorResponse('Selected shipping option is no longer available', 409);
+    if (shippingOptions.length === 0) {
+      return errorResponse('No shipping options are currently available', 409);
     }
 
     if (requestId !== quoteId) {
@@ -43,7 +42,7 @@ export const POST: APIRoute = async ({ request }) => {
     const url = await createCheckoutSession({
       product,
       destination,
-      shipping,
+      shippingOptions,
       freightcomRequestId: requestId,
     });
 

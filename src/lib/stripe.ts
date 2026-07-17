@@ -16,18 +16,22 @@ export function getStripe(): Stripe {
 type CreateCheckoutSessionInput = {
   product: Product;
   destination: ShippingDestination;
-  shipping: ShippingOption;
+  shippingOptions: ShippingOption[];
   freightcomRequestId: string;
 };
 
 export async function createCheckoutSession({
   product,
   destination,
-  shipping,
+  shippingOptions,
   freightcomRequestId,
 }: CreateCheckoutSessionInput): Promise<string> {
   const env = getEnv();
   const stripe = getStripe();
+
+  if (shippingOptions.length === 0) {
+    throw new Error('At least one shipping option is required');
+  }
 
   const session = await stripe.checkout.sessions.create({
     mode: 'payment',
@@ -47,17 +51,22 @@ export async function createCheckoutSession({
         },
       },
     },
-    shipping_options: [
-      {
-        shipping_rate_data: {
-          display_name: `${shipping.carrierName} ${shipping.serviceName}`,
-          fixed_amount: {
-            amount: shipping.totalCents,
-            currency: 'cad',
-          }
+    shipping_options: shippingOptions.slice(0, 3).map((shipping) => ({
+      shipping_rate_data: {
+        display_name: `${shipping.carrierName} ${shipping.serviceName}`,
+        fixed_amount: {
+          amount: shipping.totalCents,
+          currency: 'cad',
         },
-      }
-    ],
+        metadata: {
+          freightcom_service_id: shipping.serviceId,
+          shipping_carrier: shipping.carrierName,
+          shipping_service: shipping.serviceName,
+          shipping_base_cents: String(shipping.baseCents),
+          shipping_total_cents: String(shipping.totalCents),
+        },
+      },
+    })),
     line_items: [
       {
         price: product.stripePriceId,
@@ -69,11 +78,6 @@ export async function createCheckoutSession({
     metadata: {
       sku: product.sku,
       freightcom_request_id: freightcomRequestId,
-      freightcom_service_id: shipping.serviceId,
-      shipping_carrier: shipping.carrierName,
-      shipping_service: shipping.serviceName,
-      shipping_base_cents: String(shipping.baseCents),
-      shipping_total_cents: String(shipping.totalCents),
       ship_to_name: destination.name,
       ship_to_email: destination.email,
       ship_to_phone: destination.phone,

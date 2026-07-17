@@ -171,7 +171,8 @@ const checkoutProduct = product
                 </form>
 
                 <div id="checkout-shipping" class="checkout-shipping" hidden>
-                  <h2>Shipping Method</h2>
+                  <h2>Shipping Methods</h2>
+                  <p class="checkout-status">Choose your preferred option during secure checkout.</p>
                   <p id="shipping-status" class="checkout-status" hidden></p>
                   <div id="shipping-options" class="shipping-options"></div>
                 </div>
@@ -195,7 +196,7 @@ const checkoutProduct = product
                     <dd id="summary-shipping">Complete shipping details</dd>
                   </div>
                   <div class="checkout-summary__total">
-                    <dt>Total</dt>
+                    <dt>Subtotal</dt>
                     <dd id="summary-total">{formatPrice(checkoutProduct.priceCents)}</dd>
                   </div>
                 </dl>

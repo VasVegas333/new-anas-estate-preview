@@ -86,7 +86,7 @@ export function initCheckout(root: HTMLElement): void {
   const productPriceCents = Number.parseInt(root.dataset.priceCents ?? '0', 10);
   let quoteId: string | null = null;
   let destination: DestinationInput | null = null;
-  let selectedOption: ShippingQuoteOption | null = null;
+  let cheapestOption: ShippingQuoteOption | null = null;
   let hasShippingRates = false;
   let isLoading = false;
 
@@ -190,7 +190,7 @@ export function initCheckout(root: HTMLElement): void {
   );
 
   const updatePayButton = () => {
-    payButton.disabled = isLoading || !hasShippingRates || !selectedOption;
+    payButton.disabled = isLoading || !hasShippingRates;
   };
 
   const setContinueLoading = (loading: boolean) => {
@@ -218,18 +218,18 @@ export function initCheckout(root: HTMLElement): void {
   };
 
   const updateSummary = () => {
-    summaryShipping.textContent = selectedOption
-      ? formatCad(selectedOption.totalCents)
+    summaryShipping.textContent = cheapestOption
+      ? `From ${formatCad(cheapestOption.totalCents)}`
       : 'Complete shipping details';
-    summaryTotal.textContent = selectedOption
-      ? formatCad(productPriceCents + selectedOption.totalCents)
+    summaryTotal.textContent = cheapestOption
+      ? formatCad(productPriceCents + cheapestOption.totalCents)
       : formatCad(productPriceCents);
     updatePayButton();
   };
 
   const clearShippingRates = () => {
     hasShippingRates = false;
-    selectedOption = null;
+    cheapestOption = null;
     quoteId = null;
     shippingSection.hidden = true;
     shippingOptions.innerHTML = '';
@@ -244,16 +244,11 @@ export function initCheckout(root: HTMLElement): void {
 
     shippingOptions.innerHTML = '';
     hasShippingRates = true;
+    cheapestOption = options[0] ?? null;
 
-    options.forEach((option, index) => {
-      const label = document.createElement('label');
-      label.className = 'shipping-option';
-
-      const input = document.createElement('input');
-      input.type = 'radio';
-      input.name = 'shippingOption';
-      input.value = option.serviceId;
-      input.checked = index === 0;
+    options.forEach((option) => {
+      const item = document.createElement('div');
+      item.className = 'shipping-option';
 
       const copy = document.createElement('div');
       const title = document.createElement('strong');
@@ -265,21 +260,8 @@ export function initCheckout(root: HTMLElement): void {
       meta.textContent = `${formatCad(option.totalCents)} · ${transit}`;
 
       copy.append(title, meta);
-      label.append(input, copy);
-      shippingOptions.append(label);
-
-      if (index === 0) {
-        selectedOption = option;
-      }
-    });
-
-    shippingOptions.querySelectorAll('input[type="radio"]').forEach((input) => {
-      input.addEventListener('change', () => {
-        if (!(input instanceof HTMLInputElement)) return;
-        selectedOption =
-          options.find((option) => option.serviceId === input.value) ?? selectedOption;
-        updateSummary();
-      });
+      item.append(copy);
+      shippingOptions.append(item);
     });
 
     shippingSection.hidden = false;
@@ -328,8 +310,8 @@ export function initCheckout(root: HTMLElement): void {
   });
 
   payButton.addEventListener('click', async () => {
-    if (!destination || !selectedOption || !quoteId) {
-      setFormError('Complete your shipping details and select a shipping method to continue.');
+    if (!destination || !hasShippingRates || !quoteId) {
+      setFormError('Complete your shipping details to continue.');
       return;
     }
 
@@ -344,7 +326,6 @@ export function initCheckout(root: HTMLElement): void {
         body: JSON.stringify({
           sku: productSku,
           destination,
-          serviceId: selectedOption.serviceId,
           quoteId,
         }),
       });

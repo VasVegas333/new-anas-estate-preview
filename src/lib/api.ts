@@ -55,7 +55,6 @@ export const quoteRequestSchema = z.object({
 });
 
 export const checkoutSessionSchema = quoteRequestSchema.extend({
-  serviceId: z.string().min(1, 'Select a shipping method'),
   quoteId: z.string().min(1, 'Shipping quote has expired'),
 });
 
