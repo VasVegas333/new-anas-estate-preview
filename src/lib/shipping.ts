@@ -122,7 +122,7 @@ export function buildRateRequest(
                 h: product.package.heightIn,
               },
             },
-            description: product.format,
+            description: product.format ?? product.name,
           },
         ],
       },
