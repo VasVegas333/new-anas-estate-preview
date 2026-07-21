@@ -66,6 +66,7 @@ export function initCheckout(root: HTMLElement): void {
   const continueButton = addressForm?.querySelector<HTMLButtonElement>('button[type="submit"]');
   const payButton = root.querySelector<HTMLButtonElement>('#checkout-pay');
   const errorBox = root.querySelector<HTMLElement>('#checkout-error');
+  const orderSummary = root.querySelector<HTMLElement>('.checkout-summary');
 
   if (
     !productSku ||
@@ -76,7 +77,8 @@ export function initCheckout(root: HTMLElement): void {
     !summaryTotal ||
     !continueButton ||
     !payButton ||
-    !errorBox
+    !errorBox ||
+    !orderSummary
   ) {
     return;
   }
@@ -291,6 +293,11 @@ export function initCheckout(root: HTMLElement): void {
     shippingOptions.hidden = false;
   };
 
+  const scrollToSummaryOnMobile = () => {
+    if (!window.matchMedia('(max-width: 900px)').matches) return;
+    orderSummary.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+
   addressForm.addEventListener('submit', async (event) => {
     event.preventDefault();
     setFormError('');
@@ -324,6 +331,9 @@ export function initCheckout(root: HTMLElement): void {
 
       quoteId = data.quoteId ?? null;
       renderShippingOptions(data.options ?? []);
+      if (selectedOption) {
+        scrollToSummaryOnMobile();
+      }
     } catch (error) {
       setFormError(error instanceof Error ? error.message : 'Unable to fetch shipping rates');
     } finally {
