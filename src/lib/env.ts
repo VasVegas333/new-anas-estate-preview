@@ -5,8 +5,8 @@ import { z } from 'zod';
 
 const envSchema = z.object({
   STRIPE_SECRET_KEY: z.string().min(1),
-  FREIGHTCOM_API_KEY: z.string().min(1),
-  FREIGHTCOM_API_BASE: z.url(),
+  STALLION_API_TOKEN: z.string().min(1),
+  STALLION_API_BASE: z.url().default('https://ship.stallion.ca/api/v5'),
   SHIPPING_MARKUP_PERCENT: z.coerce.number().min(0).default(15),
   SHIP_FROM_NAME: z.string().min(1).default("Ana's Estate"),
   SHIP_FROM_CONTACT: z.string().min(1).default('Shipping Department'),

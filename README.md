@@ -37,7 +37,7 @@ src/
   config/site.ts    Site constants and forms
   data/             JSON-LD schema
   layouts/          Page shell (BaseLayout)
-  lib/              Stripe catalog, Freightcom, shipping, and API helpers
+  lib/              Stripe catalog, Stallion, shipping, and API helpers
   pages/
     api/            Shipping quotes and checkout session endpoints
     checkout/       On-site checkout flow
@@ -62,14 +62,14 @@ Client-side behavior is colocated with the code that uses it:
 - **HeroSection** — scroll and pointer parallax
 - **index** — active section highlighting in the nav
 - **BaseLayout** — scroll reveal animations and smooth anchor scrolling (shared across pages)
-- **checkout** — address form, Freightcom rate selection, Stripe redirect
+- **checkout** — address form, Stallion rate selection, Stripe redirect
 
 ## Checkout and payments
 
 Checkout uses an on-site flow at `/checkout?sku=bottle` or `/checkout?sku=case-of-12`:
 
 1. Customer enters a Canadian shipping address
-2. The server requests live parcel rates from Freightcom (with configurable markup)
+2. The server requests live parcel rates from Stallion (with configurable markup)
 3. Customer selects a shipping method
 4. The server creates a Stripe Checkout Session and redirects to Stripe for payment
 
@@ -112,12 +112,12 @@ Retire the old Payment Links once the new checkout flow is live.
 Copy `.env.example` to `.env` and configure:
 
 - `STRIPE_SECRET_KEY`
-- `FREIGHTCOM_API_KEY`, `FREIGHTCOM_API_BASE`
+- `STALLION_API_TOKEN`, `STALLION_API_BASE`
 - `SHIPPING_MARKUP_PERCENT`
 - Ship-from address fields (`SHIP_FROM_*`)
 - `SITE_URL` (production: `https://anasestate.com`)
 
-Request Freightcom API access at [freightcom.com/shipping-api](https://www.freightcom.com/shipping-api).
+Create a Stallion API token with the `rates:read` scope at [docs.stallion.ca](https://docs.stallion.ca/). Use the sandbox base URL (`https://sandbox.stallion.ca/api/v5`) for testing.
 
 ## Deployment
 

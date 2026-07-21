@@ -7,8 +7,8 @@ import {
   parseJsonBody,
   ValidationError,
 } from '../../../lib/api';
-import { fetchShippingRates } from '../../../lib/freightcom';
-import { buildRateRequest, mapFreightcomRates } from '../../../lib/shipping';
+import { fetchShippingRates } from '../../../lib/stallion';
+import { buildRateRequest, mapStallionRates } from '../../../lib/shipping';
 import { createCheckoutSession } from '../../../lib/stripe';
 
 export const prerender = false;
@@ -25,25 +25,18 @@ export const POST: APIRoute = async ({ request }) => {
     }
 
     const rateRequest = buildRateRequest(product, destination);
-    const { requestId, rates } = await fetchShippingRates(rateRequest);
-    const shippingOptions = mapFreightcomRates(rates).slice(0, 3);
+    const { rates } = await fetchShippingRates(rateRequest);
+    const shippingOptions = mapStallionRates(rates).slice(0, 3);
 
     if (shippingOptions.length === 0) {
       return errorResponse('No shipping options are currently available', 409);
-    }
-
-    if (requestId !== quoteId) {
-      console.warn('Freightcom quote ID changed between quote and checkout', {
-        quoteId,
-        requestId,
-      });
     }
 
     const url = await createCheckoutSession({
       product,
       destination,
       shippingOptions,
-      freightcomRequestId: requestId,
+      stallionQuoteId: quoteId,
     });
 
     return jsonResponse({ url });

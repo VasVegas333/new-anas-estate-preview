@@ -1,5 +1,5 @@
 import type { Product } from './catalog';
-import type { FreightcomRate, RateRequestBody, ShippingLocation } from './freightcom';
+import type { StallionAddress, StallionRate, StallionRateRequest } from './stallion';
 import { getEnv } from './env';
 
 export type ShippingDestination = {
@@ -39,6 +39,8 @@ const CA_PROVINCES = new Set([
   'YT',
 ]);
 
+const STALLION_REGIONS = new Set(['ON', 'BC', 'QC', 'AB']);
+
 export function normalizePostalCode(postalCode: string): string {
   return postalCode.replace(/\s+/g, '').toUpperCase();
 }
@@ -51,10 +53,9 @@ export function isValidCanadianProvince(region: string): boolean {
   return CA_PROVINCES.has(region.toUpperCase());
 }
 
-function moneyToCents(money: { currency: string; value: string }): number {
-  const amount = Number.parseFloat(money.value);
+function dollarsToCents(amount: number): number {
   if (!Number.isFinite(amount)) {
-    throw new Error('Invalid Freightcom money value');
+    throw new Error('Invalid money amount');
   }
   return Math.round(amount * 100);
 }
@@ -64,87 +65,73 @@ export function applyShippingMarkup(baseCents: number): number {
   return Math.round(baseCents * (1 + SHIPPING_MARKUP_PERCENT / 100));
 }
 
-function buildLocation(
+function buildAddress(
   destination: ShippingDestination,
   residential: boolean,
-): ShippingLocation {
+): StallionAddress {
   return {
     name: destination.name,
-    address: {
-      address_line_1: destination.addressLine1,
-      address_line_2: destination.addressLine2,
-      city: destination.city,
-      region: destination.region.toUpperCase(),
-      country: destination.country,
-      postal_code: normalizePostalCode(destination.postalCode),
-    },
-    residential,
-    contact_name: destination.name,
-    phone_number: { number: destination.phone.replace(/\D/g, '') },
-    email_addresses: [destination.email],
+    address1: destination.addressLine1,
+    address2: destination.addressLine2 ?? null,
+    city: destination.city,
+    province_code: destination.region.toUpperCase(),
+    postal_code: normalizePostalCode(destination.postalCode),
+    country_code: destination.country,
+    email: destination.email,
+    phone: destination.phone.replace(/\D/g, ''),
+    is_residential: residential,
   };
 }
 
 export function buildRateRequest(
   product: Product,
   destination: ShippingDestination,
-): RateRequestBody {
+): StallionRateRequest {
   const env = getEnv();
+  const shipFromRegion = env.SHIP_FROM_REGION.toUpperCase();
 
   return {
-    details: {
-      origin: {
-        name: env.SHIP_FROM_NAME,
-        address: {
-          address_line_1: env.SHIP_FROM_ADDRESS_LINE_1,
-          address_line_2: env.SHIP_FROM_ADDRESS_LINE_2,
-          city: env.SHIP_FROM_CITY,
-          region: env.SHIP_FROM_REGION,
-          country: 'CA',
-          postal_code: normalizePostalCode(env.SHIP_FROM_POSTAL_CODE),
-        },
-        residential: false,
-        contact_name: env.SHIP_FROM_CONTACT,
-        phone_number: { number: env.SHIP_FROM_PHONE.replace(/\D/g, '') },
-        email_addresses: [env.SHIP_FROM_EMAIL],
-      },
-      destination: buildLocation(destination, true),
-      packaging_type: 'package',
-      packaging_properties: {
-        packages: Array.from(
-          { length: product.package.quantity },
-          () => {
-            return {
-            measurements: {
-              weight: { unit: 'lb', value: product.package.weightLb },
-              cuboid: {
-                unit: 'in',
-                l: product.package.lengthIn,
-                w: product.package.widthIn,
-                h: product.package.heightIn,
-              },
-            },
-            description: product.format ?? product.name,
-};
-          },
-        ),
-      },
-      signature_requirement: 'not-required',
+    type: 'regular',
+    from_address: {
+      name: env.SHIP_FROM_NAME,
+      address1: env.SHIP_FROM_ADDRESS_LINE_1,
+      address2: env.SHIP_FROM_ADDRESS_LINE_2 ?? null,
+      city: env.SHIP_FROM_CITY,
+      province_code: shipFromRegion,
+      postal_code: normalizePostalCode(env.SHIP_FROM_POSTAL_CODE),
+      country_code: 'CA',
+      email: env.SHIP_FROM_EMAIL,
+      phone: env.SHIP_FROM_PHONE.replace(/\D/g, ''),
+      is_residential: false,
     },
+    to_address: buildAddress(destination, true),
+    packages: Array.from({ length: product.package.quantity }, () => ({
+      weight: product.package.weightLb,
+      weight_unit: 'lbs' as const,
+      length: product.package.lengthIn,
+      width: product.package.widthIn,
+      height: product.package.heightIn,
+      size_unit: 'in' as const,
+      package_contents: product.format ?? product.name,
+    })),
+    signature_confirmation: false,
+    region: STALLION_REGIONS.has(shipFromRegion)
+      ? (shipFromRegion as 'ON' | 'BC' | 'QC' | 'AB')
+      : null,
   };
 }
 
-export function mapFreightcomRates(rates: FreightcomRate[]): ShippingOption[] {
+export function mapStallionRates(rates: StallionRate[]): ShippingOption[] {
   return rates
     .map((rate) => {
-      const baseCents = moneyToCents(rate.total);
+      const baseCents = dollarsToCents(rate.total);
       return {
-        serviceId: rate.service_id,
-        carrierName: rate.carrier_name,
+        serviceId: rate.service,
+        carrierName: rate.carrier,
         serviceName: rate.service_name,
         baseCents,
         totalCents: applyShippingMarkup(baseCents),
-        transitDays: rate.transit_time_not_available ? null : (rate.transit_time_days ?? null),
+        transitDays: rate.estimated_delivery_days ?? null,
       };
     })
     .filter((option) => option.totalCents > 0)

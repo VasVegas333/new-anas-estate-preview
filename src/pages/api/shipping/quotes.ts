@@ -1,8 +1,8 @@
 import type { APIRoute } from 'astro';
 import { getProduct } from '../../../lib/catalog';
 import { errorResponse, jsonResponse, parseJsonBody, quoteRequestSchema, ValidationError } from '../../../lib/api';
-import { fetchShippingRates } from '../../../lib/freightcom';
-import { buildRateRequest, mapFreightcomRates } from '../../../lib/shipping';
+import { fetchShippingRates } from '../../../lib/stallion';
+import { buildRateRequest, mapStallionRates } from '../../../lib/shipping';
 
 export const prerender = false;
 
@@ -15,15 +15,15 @@ export const POST: APIRoute = async ({ request }) => {
     }
 
     const rateRequest = buildRateRequest(product, destination);
-    const { requestId, rates } = await fetchShippingRates(rateRequest);
-    const options = mapFreightcomRates(rates).slice(0, 3);
+    const { rates } = await fetchShippingRates(rateRequest);
+    const options = mapStallionRates(rates).slice(0, 3);
 
     if (options.length === 0) {
       return errorResponse('No shipping options are available for this address', 422);
     }
 
     return jsonResponse({
-      quoteId: requestId,
+      quoteId: crypto.randomUUID(),
       options: options.map((option) => ({
         serviceId: option.serviceId,
         carrierName: option.carrierName,
