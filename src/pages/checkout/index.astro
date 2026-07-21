@@ -170,13 +170,6 @@ const checkoutProduct = product
                   <button class="btn" type="submit">Continue</button>
                 </form>
 
-                <div id="checkout-shipping" class="checkout-shipping" hidden>
-                  <h2>Shipping Methods</h2>
-                  <p class="checkout-status">Choose your preferred option during secure checkout.</p>
-                  <p id="shipping-status" class="checkout-status" hidden></p>
-                  <div id="shipping-options" class="shipping-options"></div>
-                </div>
-
                 <p id="checkout-error" class="checkout-error" role="alert" hidden></p>
               </div>
 
@@ -191,9 +184,19 @@ const checkoutProduct = product
                     <dt>Product</dt>
                     <dd>{checkoutProduct.priceLabel}</dd>
                   </div>
-                  <div>
-                    <dt>Shipping</dt>
-                    <dd id="summary-shipping">Complete shipping details</dd>
+                  <div class="checkout-summary__shipping">
+                    <div class="checkout-summary__shipping-line">
+                      <dt>Shipping</dt>
+                      <dd id="summary-shipping">Complete shipping details</dd>
+                    </div>
+                    <p id="shipping-status" class="checkout-status" hidden></p>
+                    <div
+                      id="shipping-options"
+                      class="summary-shipping-options"
+                      role="radiogroup"
+                      aria-label="Shipping method"
+                      hidden
+                    ></div>
                   </div>
                   <div class="checkout-summary__total">
                     <dt>Subtotal</dt>

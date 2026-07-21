@@ -8,14 +8,14 @@ import {
   ValidationError,
 } from '../../../lib/api';
 import { fetchShippingRates } from '../../../lib/stallion';
-import { buildRateRequest, mapStallionRates } from '../../../lib/shipping';
+import { buildRateRequest, findShippingOption, mapStallionRates } from '../../../lib/shipping';
 import { createCheckoutSession } from '../../../lib/stripe';
 
 export const prerender = false;
 
 export const POST: APIRoute = async ({ request }) => {
   try {
-    const { sku, destination, quoteId } = await parseJsonBody(
+    const { sku, destination, quoteId, serviceId } = await parseJsonBody(
       request,
       checkoutSessionSchema,
     );
@@ -26,16 +26,17 @@ export const POST: APIRoute = async ({ request }) => {
 
     const rateRequest = buildRateRequest(product, destination);
     const { rates } = await fetchShippingRates(rateRequest);
-    const shippingOptions = mapStallionRates(rates).slice(0, 3);
+    const quotedOptions = mapStallionRates(rates).slice(0, 3);
+    const selectedOption = findShippingOption(quotedOptions, serviceId);
 
-    if (shippingOptions.length === 0) {
-      return errorResponse('No shipping options are currently available', 409);
+    if (!selectedOption) {
+      return errorResponse('Selected shipping method is no longer available', 409);
     }
 
     const url = await createCheckoutSession({
       product,
       destination,
-      shippingOptions,
+      shippingOptions: [selectedOption],
       stallionQuoteId: quoteId,
     });
 

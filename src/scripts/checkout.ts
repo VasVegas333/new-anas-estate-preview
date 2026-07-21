@@ -59,7 +59,6 @@ export function readDestination(form: HTMLFormElement): DestinationInput {
 export function initCheckout(root: HTMLElement): void {
   const productSku = root.dataset.sku;
   const addressForm = root.querySelector<HTMLFormElement>('#checkout-address-form');
-  const shippingSection = root.querySelector<HTMLElement>('#checkout-shipping');
   const shippingOptions = root.querySelector<HTMLElement>('#shipping-options');
   const shippingStatus = root.querySelector<HTMLElement>('#shipping-status');
   const summaryShipping = root.querySelector<HTMLElement>('#summary-shipping');
@@ -71,7 +70,6 @@ export function initCheckout(root: HTMLElement): void {
   if (
     !productSku ||
     !addressForm ||
-    !shippingSection ||
     !shippingOptions ||
     !shippingStatus ||
     !summaryShipping ||
@@ -86,8 +84,7 @@ export function initCheckout(root: HTMLElement): void {
   const productPriceCents = Number.parseInt(root.dataset.priceCents ?? '0', 10);
   let quoteId: string | null = null;
   let destination: DestinationInput | null = null;
-  let cheapestOption: ShippingQuoteOption | null = null;
-  let hasShippingRates = false;
+  let selectedOption: ShippingQuoteOption | null = null;
   let isLoading = false;
 
   const regionSelect = addressForm.querySelector<HTMLSelectElement>('#checkout-region');
@@ -190,7 +187,7 @@ export function initCheckout(root: HTMLElement): void {
   );
 
   const updatePayButton = () => {
-    payButton.disabled = isLoading || !hasShippingRates;
+    payButton.disabled = isLoading || !selectedOption || !quoteId;
   };
 
   const setContinueLoading = (loading: boolean) => {
@@ -215,24 +212,31 @@ export function initCheckout(root: HTMLElement): void {
         element.disabled = loading;
       }
     });
+    shippingOptions.querySelectorAll<HTMLInputElement>('input[type="radio"]').forEach((radio) => {
+      radio.disabled = loading;
+    });
   };
 
   const updateSummary = () => {
-    summaryShipping.textContent = cheapestOption
-      ? `From ${formatCad(cheapestOption.totalCents)}`
+    summaryShipping.textContent = selectedOption
+      ? formatCad(selectedOption.totalCents)
       : 'Complete shipping details';
-    summaryTotal.textContent = cheapestOption
-      ? formatCad(productPriceCents + cheapestOption.totalCents)
+    summaryTotal.textContent = selectedOption
+      ? formatCad(productPriceCents + selectedOption.totalCents)
       : formatCad(productPriceCents);
     updatePayButton();
   };
 
   const clearShippingRates = () => {
-    hasShippingRates = false;
-    cheapestOption = null;
+    selectedOption = null;
     quoteId = null;
-    shippingSection.hidden = true;
+    shippingOptions.hidden = true;
     shippingOptions.innerHTML = '';
+    updateSummary();
+  };
+
+  const selectOption = (option: ShippingQuoteOption) => {
+    selectedOption = option;
     updateSummary();
   };
 
@@ -243,29 +247,48 @@ export function initCheckout(root: HTMLElement): void {
     }
 
     shippingOptions.innerHTML = '';
-    hasShippingRates = true;
-    cheapestOption = options[0] ?? null;
+    const defaultOption = options[0]!;
+    selectOption(defaultOption);
 
-    options.forEach((option) => {
-      const item = document.createElement('div');
-      item.className = 'shipping-option';
+    options.forEach((option, index) => {
+      const label = document.createElement('label');
+      label.className = 'summary-shipping-option';
 
-      const copy = document.createElement('div');
-      const title = document.createElement('strong');
+      const radio = document.createElement('input');
+      radio.type = 'radio';
+      radio.name = 'shipping-method';
+      radio.value = option.serviceId;
+      radio.checked = index === 0;
+
+      const copy = document.createElement('span');
+      copy.className = 'summary-shipping-option__copy';
+
+      const title = document.createElement('span');
+      title.className = 'summary-shipping-option__title';
       title.textContent = option.serviceName;
 
       const meta = document.createElement('span');
+      meta.className = 'summary-shipping-option__meta';
       const transit =
-        option.transitDays === null ? 'Transit time varies' : `${option.transitDays} business days`;
-      meta.textContent = `${formatCad(option.totalCents)} · ${transit}`;
+        option.transitDays === null ? 'Varies' : `${option.transitDays} days`;
+      meta.textContent = `${transit}`;
+
+      const price = document.createElement('span');
+      price.className = 'summary-shipping-option__price';
+      price.textContent = formatCad(option.totalCents);
 
       copy.append(title, meta);
-      item.append(copy);
-      shippingOptions.append(item);
+      label.append(radio, copy, price);
+      shippingOptions.append(label);
+
+      radio.addEventListener('change', () => {
+        if (radio.checked) {
+          selectOption(option);
+        }
+      });
     });
 
-    shippingSection.hidden = false;
-    updateSummary();
+    shippingOptions.hidden = false;
   };
 
   addressForm.addEventListener('submit', async (event) => {
@@ -274,7 +297,7 @@ export function initCheckout(root: HTMLElement): void {
     clearFieldErrors();
     destination = readDestination(addressForm);
     clearShippingRates();
-    setLoading(true, 'Fetching shipping rates…');
+    setLoading(true, 'Fetching rates…');
     setContinueLoading(true);
 
     try {
@@ -310,14 +333,14 @@ export function initCheckout(root: HTMLElement): void {
   });
 
   payButton.addEventListener('click', async () => {
-    if (!destination || !hasShippingRates || !quoteId) {
+    if (!destination || !selectedOption || !quoteId) {
       setFormError('Complete your shipping details to continue.');
       return;
     }
 
     setFormError('');
     clearFieldErrors();
-    setLoading(true, 'Redirecting to secure payment…');
+    setLoading(true, 'Redirecting…');
 
     try {
       const response = await fetch('/api/checkout/session', {
@@ -327,6 +350,7 @@ export function initCheckout(root: HTMLElement): void {
           sku: productSku,
           destination,
           quoteId,
+          serviceId: selectedOption.serviceId,
         }),
       });
 

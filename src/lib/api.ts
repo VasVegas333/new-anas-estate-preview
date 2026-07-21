@@ -56,6 +56,7 @@ export const quoteRequestSchema = z.object({
 
 export const checkoutSessionSchema = quoteRequestSchema.extend({
   quoteId: z.string().min(1, 'Shipping quote has expired'),
+  serviceId: z.string().min(1, 'Select a shipping method'),
 });
 
 export class ValidationError extends Error {
