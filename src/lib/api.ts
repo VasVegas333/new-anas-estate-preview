@@ -49,8 +49,18 @@ export const destinationSchema = z.object({
   country: z.literal('CA', { message: 'Shipping is only available within Canada' }),
 });
 
-export const quoteRequestSchema = z.object({
+export const cartItemSchema = z.object({
   sku: z.string().trim().min(1, 'Invalid product'),
+  quantity: z.number().int().min(1).max(99),
+});
+
+export const cartItemsSchema = z
+  .array(cartItemSchema)
+  .min(1, 'Your cart is empty')
+  .max(20, 'Too many items in cart');
+
+export const quoteRequestSchema = z.object({
+  items: cartItemsSchema,
   destination: destinationSchema,
 });
 
@@ -58,6 +68,19 @@ export const checkoutSessionSchema = quoteRequestSchema.extend({
   quoteId: z.string().min(1, 'Shipping quote has expired'),
   serviceId: z.string().min(1, 'Select a shipping method'),
 });
+
+export type CartItemInput = z.infer<typeof cartItemSchema>;
+
+export function dedupeCartItems(items: CartItemInput[]): CartItemInput[] {
+  const quantities = new Map<string, number>();
+
+  for (const item of items) {
+    const next = (quantities.get(item.sku) ?? 0) + item.quantity;
+    quantities.set(item.sku, Math.min(99, next));
+  }
+
+  return Array.from(quantities.entries()).map(([sku, quantity]) => ({ sku, quantity }));
+}
 
 export class ValidationError extends Error {
   readonly fieldErrors: FieldErrors;

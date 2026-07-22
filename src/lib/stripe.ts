@@ -13,21 +13,30 @@ export function getStripe(): Stripe {
   return stripeClient;
 }
 
-type CreateCheckoutSessionInput = {
+type CheckoutLine = {
   product: Product;
+  quantity: number;
+};
+
+type CreateCheckoutSessionInput = {
+  lines: CheckoutLine[];
   destination: ShippingDestination;
   shippingOptions: ShippingOption[];
   stallionQuoteId: string;
 };
 
 export async function createCheckoutSession({
-  product,
+  lines,
   destination,
   shippingOptions,
   stallionQuoteId,
 }: CreateCheckoutSessionInput): Promise<string> {
   const env = getEnv();
   const stripe = getStripe();
+
+  if (lines.length === 0) {
+    throw new Error('At least one product is required');
+  }
 
   if (shippingOptions.length === 0) {
     throw new Error('At least one shipping option is required');
@@ -68,16 +77,14 @@ export async function createCheckoutSession({
         },
       },
     })),
-    line_items: [
-      {
-        price: product.stripePriceId,
-        quantity: 1,
-      },
-    ],
+    line_items: lines.map(({ product, quantity }) => ({
+      price: product.stripePriceId,
+      quantity,
+    })),
     success_url: `${env.SITE_URL}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
-    cancel_url: `${env.SITE_URL}/checkout/cancel?sku=${product.sku}`,
+    cancel_url: `${env.SITE_URL}/checkout/cancel`,
     metadata: {
-      sku: product.sku,
+      skus: lines.map(({ product, quantity }) => `${product.sku}:${quantity}`).join(','),
       stallion_quote_id: stallionQuoteId,
       ship_to_name: destination.name,
       ship_to_email: destination.email,

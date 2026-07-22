@@ -1,3 +1,5 @@
+import { clearCart, formatCad, getCart, type CartItem, type CatalogProduct } from './cart';
+
 export type ShippingQuoteOption = {
   serviceId: string;
   carrierName: string;
@@ -25,12 +27,10 @@ type ApiErrorResponse = {
   fieldErrors?: FieldErrors;
 };
 
-export function formatCad(cents: number): string {
-  return new Intl.NumberFormat('en-CA', {
-    style: 'currency',
-    currency: 'CAD',
-  }).format(cents / 100);
-}
+type ResolvedLine = {
+  item: CartItem;
+  product: CatalogProduct;
+};
 
 function getField(form: HTMLFormElement, name: string): string {
   const field = form.elements.namedItem(name);
@@ -56,25 +56,60 @@ export function readDestination(form: HTMLFormElement): DestinationInput {
   };
 }
 
+function parseCatalog(root: HTMLElement): CatalogProduct[] {
+  const raw = root.dataset.catalog;
+  if (!raw) return [];
+
+  try {
+    const parsed: unknown = JSON.parse(raw);
+    if (!Array.isArray(parsed)) return [];
+    return parsed.filter((item): item is CatalogProduct => {
+      if (!item || typeof item !== 'object') return false;
+      const product = item as Record<string, unknown>;
+      return (
+        typeof product.sku === 'string' &&
+        typeof product.name === 'string' &&
+        typeof product.priceCents === 'number'
+      );
+    });
+  } catch {
+    return [];
+  }
+}
+
+function resolveCartLines(catalog: CatalogProduct[]): ResolvedLine[] {
+  const catalogBySku = new Map(catalog.map((product) => [product.sku, product]));
+
+  return getCart()
+    .map((item) => {
+      const product = catalogBySku.get(item.sku);
+      if (!product) return null;
+      return { item, product };
+    })
+    .filter((line): line is ResolvedLine => line !== null);
+}
+
 export function initCheckout(root: HTMLElement): void {
-  const productSku = root.dataset.sku;
   const addressForm = root.querySelector<HTMLFormElement>('#checkout-address-form');
   const shippingOptions = root.querySelector<HTMLElement>('#shipping-options');
   const shippingStatus = root.querySelector<HTMLElement>('#shipping-status');
   const summaryShipping = root.querySelector<HTMLElement>('#summary-shipping');
+  const summaryProducts = root.querySelector<HTMLElement>('#summary-products');
   const summaryTotal = root.querySelector<HTMLElement>('#summary-total');
+  const summaryLines = root.querySelector<HTMLElement>('[data-checkout-lines]');
   const continueButton = addressForm?.querySelector<HTMLButtonElement>('button[type="submit"]');
   const payButton = root.querySelector<HTMLButtonElement>('#checkout-pay');
   const errorBox = root.querySelector<HTMLElement>('#checkout-error');
   const orderSummary = root.querySelector<HTMLElement>('.checkout-summary');
 
   if (
-    !productSku ||
     !addressForm ||
     !shippingOptions ||
     !shippingStatus ||
     !summaryShipping ||
+    !summaryProducts ||
     !summaryTotal ||
+    !summaryLines ||
     !continueButton ||
     !payButton ||
     !errorBox ||
@@ -83,11 +118,45 @@ export function initCheckout(root: HTMLElement): void {
     return;
   }
 
-  const productPriceCents = Number.parseInt(root.dataset.priceCents ?? '0', 10);
+  const catalog = parseCatalog(root);
+  const lines = resolveCartLines(catalog);
+  const cartItems = lines.map(({ item }) => item);
+  const productSubtotalCents = lines.reduce(
+    (total, { item, product }) => total + product.priceCents * item.quantity,
+    0,
+  );
+
   let quoteId: string | null = null;
   let destination: DestinationInput | null = null;
   let selectedOption: ShippingQuoteOption | null = null;
   let isLoading = false;
+
+  const renderProductLines = () => {
+    summaryLines.innerHTML = '';
+
+    for (const { item, product } of lines) {
+      const row = document.createElement('div');
+      row.className = 'checkout-summary__product';
+
+      if (product.format) {
+        const format = document.createElement('p');
+        format.className = 'checkout-summary__format';
+        format.textContent = product.format;
+        row.append(format);
+      }
+
+      const title = document.createElement('h3');
+      title.textContent = product.name;
+      row.append(title);
+
+      const meta = document.createElement('p');
+      meta.className = 'checkout-summary__qty';
+      meta.textContent = `${item.quantity} × ${formatCad(product.priceCents)}`;
+      row.append(meta);
+
+      summaryLines.append(row);
+    }
+  };
 
   const setFormError = (message: string) => {
     errorBox.textContent = message;
@@ -203,12 +272,13 @@ export function initCheckout(root: HTMLElement): void {
   };
 
   const updateSummary = () => {
+    summaryProducts.textContent = formatCad(productSubtotalCents);
     summaryShipping.textContent = selectedOption
       ? formatCad(selectedOption.totalCents)
       : 'Complete shipping details';
     summaryTotal.textContent = selectedOption
-      ? formatCad(productPriceCents + selectedOption.totalCents)
-      : formatCad(productPriceCents);
+      ? formatCad(productSubtotalCents + selectedOption.totalCents)
+      : formatCad(productSubtotalCents);
     updatePayButton();
   };
 
@@ -294,7 +364,7 @@ export function initCheckout(root: HTMLElement): void {
       const response = await fetch('/api/shipping/quotes', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ sku: productSku, destination }),
+        body: JSON.stringify({ items: cartItems, destination }),
       });
 
       const data = (await response.json()) as ApiErrorResponse & {
@@ -340,7 +410,7 @@ export function initCheckout(root: HTMLElement): void {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          sku: productSku,
+          items: cartItems,
           destination,
           quoteId,
           serviceId: selectedOption.serviceId,
@@ -371,7 +441,27 @@ export function initCheckout(root: HTMLElement): void {
     }
   });
 
+  renderProductLines();
   updateSummary();
 }
 
-document.querySelectorAll<HTMLElement>('[data-checkout]').forEach(initCheckout);
+const emptyEl = document.querySelector<HTMLElement>('[data-checkout-empty]');
+const shellEl = document.querySelector<HTMLElement>('[data-checkout-shell]');
+const checkoutRoot = document.querySelector<HTMLElement>('[data-checkout]');
+
+if (emptyEl && shellEl && checkoutRoot) {
+  const catalog = parseCatalog(checkoutRoot);
+  const lines = resolveCartLines(catalog);
+
+  if (lines.length === 0) {
+    if (getCart().length > 0) {
+      clearCart();
+    }
+    emptyEl.hidden = false;
+    shellEl.hidden = true;
+  } else {
+    emptyEl.hidden = true;
+    shellEl.hidden = false;
+    initCheckout(checkoutRoot);
+  }
+}
