@@ -245,7 +245,7 @@ export function initCheckout(root: HTMLElement): void {
   };
 
   const setContinueLoading = (loading: boolean) => {
-    continueButton.textContent = loading ? 'Loading…' : 'Continue';
+    continueButton.textContent = loading ? 'Loading…' : 'Get shipping options';
     if (loading) {
       continueButton.setAttribute('aria-busy', 'true');
     } else {
