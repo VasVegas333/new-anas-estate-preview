@@ -80,9 +80,36 @@ const products = await getProducts();
                       </ul>
                     )}
                     <div class="price">{formatPrice(product.priceCents)}</div>
-                    <a class="btn" href={`/checkout?sku=${product.sku}`}>
-                      Buy Now
-                    </a>
+                    <div class="product-cart-actions" data-product-cart={product.sku}>
+                      <button
+                        class="btn"
+                        type="button"
+                        data-add-to-cart={product.sku}
+                      >
+                        Add to Cart
+                      </button>
+                      <div class="product-cart-qty" data-cart-qty hidden>
+                        <button
+                          class="product-cart-qty__btn"
+                          type="button"
+                          data-cart-decrease
+                          aria-label="Decrease quantity"
+                        >
+                          −
+                        </button>
+                        <span class="product-cart-qty__label" data-cart-qty-label>
+                          1 In Cart
+                        </span>
+                        <button
+                          class="product-cart-qty__btn"
+                          type="button"
+                          data-cart-increase
+                          aria-label="Increase quantity"
+                        >
+                          +
+                        </button>
+                      </div>
+                    </div>
                   </div>
                 </article>
               ))}

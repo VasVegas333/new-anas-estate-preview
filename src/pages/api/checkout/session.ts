@@ -2,6 +2,7 @@ import type { APIRoute } from 'astro';
 import { getProduct } from '../../../lib/catalog';
 import {
   checkoutSessionSchema,
+  dedupeCartItems,
   errorResponse,
   jsonResponse,
   parseJsonBody,
@@ -15,16 +16,22 @@ export const prerender = false;
 
 export const POST: APIRoute = async ({ request }) => {
   try {
-    const { sku, destination, quoteId, serviceId } = await parseJsonBody(
+    const { items, destination, quoteId, serviceId } = await parseJsonBody(
       request,
       checkoutSessionSchema,
     );
-    const product = await getProduct(sku);
-    if (!product) {
-      return errorResponse('Product not found', 404);
+    const cartItems = dedupeCartItems(items);
+
+    const lines = [];
+    for (const item of cartItems) {
+      const product = await getProduct(item.sku);
+      if (!product) {
+        return errorResponse(`Product not found: ${item.sku}`, 404);
+      }
+      lines.push({ product, quantity: item.quantity });
     }
 
-    const rateRequest = buildRateRequest(product, destination);
+    const rateRequest = buildRateRequest(lines, destination);
     const { rates } = await fetchShippingRates(rateRequest);
     const quotedOptions = mapStallionRates(rates).slice(0, 3);
     const selectedOption = findShippingOption(quotedOptions, serviceId);
@@ -34,7 +41,7 @@ export const POST: APIRoute = async ({ request }) => {
     }
 
     const url = await createCheckoutSession({
-      product,
+      lines,
       destination,
       shippingOptions: [selectedOption],
       stallionQuoteId: quoteId,

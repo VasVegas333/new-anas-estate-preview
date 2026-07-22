@@ -80,7 +80,7 @@ export async function getHomeJsonLd() {
         itemCondition: 'https://schema.org/NewCondition',
         offers: {
           '@type': 'Offer',
-          url: `${SITE.url}/checkout?sku=${product.sku}`,
+          url: `${SITE.url}/products`,
           price: (product.priceCents / 100).toFixed(2),
           priceCurrency: 'CAD',
           availability: 'https://schema.org/InStock',

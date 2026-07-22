@@ -14,6 +14,7 @@ const homeHref = isHome ? '#top' : '/';
 const currentPath = Astro.url.pathname.replace(/\/$/, '') || '/';
 const isShopPage = currentPath === '/products';
 const isContactPage = currentPath === '/contact';
+const isCartPage = currentPath === '/cart';
 
 function pageLinkProps(isActive: boolean) {
   return {
@@ -24,6 +25,7 @@ function pageLinkProps(isActive: boolean) {
 
 const shopLinkProps = pageLinkProps(isShopPage);
 const contactLinkProps = pageLinkProps(isContactPage);
+const cartLinkProps = pageLinkProps(isCartPage);
 ---
 
 <header class="site-header">
@@ -42,6 +44,28 @@ const contactLinkProps = pageLinkProps(isContactPage);
       <a href={section('tasting')}>Taste Profile</a>
       <a href="/products" {...shopLinkProps}>Shop</a>
       <a href="/contact" {...contactLinkProps}>Contact</a>
+      <div class="header-cart">
+        <span class="nav-divider" aria-hidden="true"></span>
+        <a
+          class:list={['nav-cart', cartLinkProps.class]}
+          href="/cart"
+          data-cart-link
+          aria-label="Cart"
+          aria-current={cartLinkProps['aria-current']}
+        >
+          <svg class="nav-cart__icon" viewBox="0 0 24 24" width="32" height="32" aria-hidden="true">
+            <path
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.6"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M5 9h14l-.9 10.5H5.9L5 9Zm3-2.8a4 4 0 0 1 8 0V9H8V6.2Z"
+            ></path>
+          </svg>
+          <span class="cart-badge" data-cart-badge hidden></span>
+        </a>
+      </div>
     </nav>
 
     <button
@@ -67,6 +91,8 @@ const contactLinkProps = pageLinkProps(isContactPage);
     <a href="/contact" {...contactLinkProps}>Contact</a>
   </nav>
 </header>
+
+<script src="../../scripts/cart-badge.ts"></script>
 
 <script>
   const menuToggle = document.querySelector('.menu-toggle');

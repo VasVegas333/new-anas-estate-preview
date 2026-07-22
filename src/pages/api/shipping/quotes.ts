@@ -1,6 +1,13 @@
 import type { APIRoute } from 'astro';
 import { getProduct } from '../../../lib/catalog';
-import { errorResponse, jsonResponse, parseJsonBody, quoteRequestSchema, ValidationError } from '../../../lib/api';
+import {
+  dedupeCartItems,
+  errorResponse,
+  jsonResponse,
+  parseJsonBody,
+  quoteRequestSchema,
+  ValidationError,
+} from '../../../lib/api';
 import { fetchShippingRates } from '../../../lib/stallion';
 import { buildRateRequest, mapStallionRates } from '../../../lib/shipping';
 
@@ -8,13 +15,19 @@ export const prerender = false;
 
 export const POST: APIRoute = async ({ request }) => {
   try {
-    const { sku, destination } = await parseJsonBody(request, quoteRequestSchema);
-    const product = await getProduct(sku);
-    if (!product) {
-      return errorResponse('Product not found', 404);
+    const { items, destination } = await parseJsonBody(request, quoteRequestSchema);
+    const cartItems = dedupeCartItems(items);
+
+    const lines = [];
+    for (const item of cartItems) {
+      const product = await getProduct(item.sku);
+      if (!product) {
+        return errorResponse(`Product not found: ${item.sku}`, 404);
+      }
+      lines.push({ product, quantity: item.quantity });
     }
 
-    const rateRequest = buildRateRequest(product, destination);
+    const rateRequest = buildRateRequest(lines, destination);
     const { rates } = await fetchShippingRates(rateRequest);
     const options = mapStallionRates(rates).slice(0, 3);
 

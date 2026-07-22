@@ -83,12 +83,43 @@ function buildAddress(
   };
 }
 
+export type RateRequestLine = {
+  product: Product;
+  quantity: number;
+};
+
 export function buildRateRequest(
-  product: Product,
+  lines: RateRequestLine[],
   destination: ShippingDestination,
 ): StallionRateRequest {
+  if (lines.length === 0) {
+    throw new Error('At least one product is required');
+  }
+
   const env = getEnv();
   const shipFromRegion = env.SHIP_FROM_REGION.toUpperCase();
+
+  const packages = lines.flatMap(({ product, quantity }) =>
+    Array.from({ length: product.package.quantity * quantity }, () => ({
+      weight: product.package.weightLb,
+      weight_unit: 'lbs' as const,
+      length: product.package.lengthIn,
+      width: product.package.widthIn,
+      height: product.package.heightIn,
+      size_unit: 'in' as const,
+      package_contents: product.format ?? product.name,
+    })),
+  );
+
+  const items = lines.map(({ product, quantity }) => ({
+    title: product.name,
+    description: product.format ?? product.description ?? null,
+    quantity,
+    value: product.priceCents / 100,
+    currency: 'CAD' as const,
+    country_of_origin: 'GR',
+    sku: product.sku,
+  }));
 
   return {
     type: 'regular',
@@ -105,26 +136,8 @@ export function buildRateRequest(
       is_residential: false,
     },
     to_address: buildAddress(destination, true),
-    packages: Array.from({ length: product.package.quantity }, () => ({
-      weight: product.package.weightLb,
-      weight_unit: 'lbs' as const,
-      length: product.package.lengthIn,
-      width: product.package.widthIn,
-      height: product.package.heightIn,
-      size_unit: 'in' as const,
-      package_contents: product.format ?? product.name,
-    })),
-    items: [
-      {
-        title: product.name,
-        description: product.format ?? product.description ?? null,
-        quantity: 1,
-        value: product.priceCents / 100,
-        currency: 'CAD',
-        country_of_origin: 'GR',
-        sku: product.sku,
-      },
-    ],
+    packages,
+    items,
     signature_confirmation: false,
     region: STALLION_REGIONS.has(shipFromRegion)
       ? (shipFromRegion as 'ON' | 'BC' | 'QC' | 'AB')
