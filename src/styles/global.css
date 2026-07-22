@@ -2564,44 +2564,10 @@ h3 {
   align-items: start;
 }
 
-.checkout-shipping {
-  margin-top: 32px;
-  padding-top: 28px;
-  border-top: 1px solid var(--gold-border);
-}
-
 .checkout-status {
-  margin: 0 0 16px;
+  margin: 0;
   color: var(--body-text);
-  font-size: 14px;
-}
-
-.shipping-options {
-  display: grid;
-  gap: 12px;
-}
-
-.shipping-option {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 12px;
-  align-items: start;
-  padding: 14px 16px;
-  border: 1px solid var(--gold-border);
-  background: var(--paper);
-}
-
-.shipping-option strong {
-  display: block;
-  margin-bottom: 4px;
-  color: var(--blue);
-  font-family: var(--serif);
-  font-size: 20px;
-}
-
-.shipping-option span {
-  color: var(--body-text);
-  font-size: 14px;
+  font-size: 13px;
 }
 
 .checkout-error {
@@ -2633,7 +2599,7 @@ h3 {
   margin: 0 0 24px;
 }
 
-.checkout-summary__lines div {
+.checkout-summary__lines > div:not(.checkout-summary__shipping) {
   display: flex;
   justify-content: space-between;
   gap: 16px;
@@ -2649,6 +2615,69 @@ h3 {
   margin: 0;
   color: var(--ink);
   font-weight: 600;
+}
+
+.checkout-summary__shipping {
+  display: grid;
+  gap: 10px;
+}
+
+.checkout-summary__shipping-line {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.summary-shipping-options {
+  display: grid;
+  gap: 6px;
+}
+
+.summary-shipping-option {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 10px;
+  align-items: center;
+  padding: 8px 10px;
+  cursor: pointer;
+  background: var(--paper);
+  border: 1px solid var(--gold-border);
+}
+
+.summary-shipping-option:has(input:checked) {
+  background: var(--white);
+  border-color: var(--gold);
+}
+
+.summary-shipping-option input {
+  margin: 0;
+  accent-color: var(--blue);
+}
+
+.summary-shipping-option__copy {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.summary-shipping-option__title {
+  color: var(--blue);
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.summary-shipping-option__meta {
+  color: var(--body-text);
+  font-size: 12px;
+  line-height: 1.25;
+}
+
+.summary-shipping-option__price {
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
 }
 
 .checkout-summary__total {

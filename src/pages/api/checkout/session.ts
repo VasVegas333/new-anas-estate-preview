@@ -7,15 +7,15 @@ import {
   parseJsonBody,
   ValidationError,
 } from '../../../lib/api';
-import { fetchShippingRates } from '../../../lib/freightcom';
-import { buildRateRequest, mapFreightcomRates } from '../../../lib/shipping';
+import { fetchShippingRates } from '../../../lib/stallion';
+import { buildRateRequest, findShippingOption, mapStallionRates } from '../../../lib/shipping';
 import { createCheckoutSession } from '../../../lib/stripe';
 
 export const prerender = false;
 
 export const POST: APIRoute = async ({ request }) => {
   try {
-    const { sku, destination, quoteId } = await parseJsonBody(
+    const { sku, destination, quoteId, serviceId } = await parseJsonBody(
       request,
       checkoutSessionSchema,
     );
@@ -25,25 +25,19 @@ export const POST: APIRoute = async ({ request }) => {
     }
 
     const rateRequest = buildRateRequest(product, destination);
-    const { requestId, rates } = await fetchShippingRates(rateRequest);
-    const shippingOptions = mapFreightcomRates(rates).slice(0, 3);
+    const { rates } = await fetchShippingRates(rateRequest);
+    const quotedOptions = mapStallionRates(rates).slice(0, 3);
+    const selectedOption = findShippingOption(quotedOptions, serviceId);
 
-    if (shippingOptions.length === 0) {
-      return errorResponse('No shipping options are currently available', 409);
-    }
-
-    if (requestId !== quoteId) {
-      console.warn('Freightcom quote ID changed between quote and checkout', {
-        quoteId,
-        requestId,
-      });
+    if (!selectedOption) {
+      return errorResponse('Selected shipping method is no longer available', 409);
     }
 
     const url = await createCheckoutSession({
       product,
       destination,
-      shippingOptions,
-      freightcomRequestId: requestId,
+      shippingOptions: [selectedOption],
+      stallionQuoteId: quoteId,
     });
 
     return jsonResponse({ url });

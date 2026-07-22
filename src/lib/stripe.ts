@@ -17,14 +17,14 @@ type CreateCheckoutSessionInput = {
   product: Product;
   destination: ShippingDestination;
   shippingOptions: ShippingOption[];
-  freightcomRequestId: string;
+  stallionQuoteId: string;
 };
 
 export async function createCheckoutSession({
   product,
   destination,
   shippingOptions,
-  freightcomRequestId,
+  stallionQuoteId,
 }: CreateCheckoutSessionInput): Promise<string> {
   const env = getEnv();
   const stripe = getStripe();
@@ -53,13 +53,14 @@ export async function createCheckoutSession({
     },
     shipping_options: shippingOptions.slice(0, 3).map((shipping) => ({
       shipping_rate_data: {
-        display_name: `${shipping.carrierName} ${shipping.serviceName}`,
+        type: 'fixed_amount' as const,
+        display_name: shipping.serviceName,
         fixed_amount: {
           amount: shipping.totalCents,
           currency: 'cad',
         },
         metadata: {
-          freightcom_service_id: shipping.serviceId,
+          stallion_service: shipping.serviceId,
           shipping_carrier: shipping.carrierName,
           shipping_service: shipping.serviceName,
           shipping_base_cents: String(shipping.baseCents),
@@ -77,7 +78,7 @@ export async function createCheckoutSession({
     cancel_url: `${env.SITE_URL}/checkout/cancel?sku=${product.sku}`,
     metadata: {
       sku: product.sku,
-      freightcom_request_id: freightcomRequestId,
+      stallion_quote_id: stallionQuoteId,
       ship_to_name: destination.name,
       ship_to_email: destination.email,
       ship_to_phone: destination.phone,
