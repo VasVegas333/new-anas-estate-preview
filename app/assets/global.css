@@ -881,7 +881,7 @@ h3 {
   inset: 0;
   z-index: 0;
 
-  background-image: url("/textures/origin-line-art.png");
+  background-image: url("/textures/origin-line-art.webp");
   background-repeat: no-repeat;
   background-position: center center;
   background-size: cover;
@@ -2429,7 +2429,7 @@ h3 {
   inset: 0;
   z-index: -2;
 
-  background-image: url("/textures/origin-line-art.png");
+  background-image: url("/textures/origin-line-art.webp");
   background-repeat: no-repeat;
   background-position: center;
   background-size: cover;

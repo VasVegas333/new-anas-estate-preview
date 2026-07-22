@@ -3,7 +3,7 @@
     <section class="hero" aria-labelledby="hero-title">
       <img
         class="hero-art parallax-layer"
-        src="/images/hero/grove-line-art.png"
+        src="/images/hero/grove-line-art.webp"
         alt=""
         aria-hidden="true"
         data-parallax-speed="0.08"
