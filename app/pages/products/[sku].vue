@@ -68,8 +68,9 @@
 
 <script setup lang="ts">
 import { formatCurrency } from '#shared/utils/format';
-import { DEFAULT_PRODUCT_FEATURES, productPath } from '#shared/utils/product';
+import { DEFAULT_PRODUCT_FEATURES } from '#shared/utils/product';
 import type { CatalogProduct } from '#shared/types';
+import { defineCatalogProduct } from '~/utils/defineCatalogProduct';
 
 const route = useRoute();
 const sku = computed(() => String(route.params.sku ?? ''));
@@ -107,27 +108,6 @@ useSchemaOrg([
   defineWebPage({
     name: resolved.name,
   }),
-  defineProduct({
-    name: resolved.name,
-    description: resolved.description,
-    image: resolved.imageUrl,
-    sku: resolved.sku,
-    brand: {
-      '@type': 'Brand',
-      name: "Ana's Estate",
-    },
-    category: 'Extra Virgin Olive Oil',
-    countryOfOrigin: {
-      '@type': 'Country',
-      name: 'Greece',
-    },
-    offers: defineOffer({
-      url: productPath(resolved.sku),
-      price: (resolved.priceCents / 100).toFixed(2),
-      priceCurrency: 'CAD',
-      availability: 'https://schema.org/InStock',
-      itemCondition: 'https://schema.org/NewCondition',
-    }),
-  }),
+  defineCatalogProduct(resolved),
 ]);
 </script>

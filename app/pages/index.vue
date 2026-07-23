@@ -238,7 +238,8 @@
 </template>
 
 <script setup lang="ts">
-import { productPath } from '#shared/utils/product';
+import type { CatalogProduct } from '#shared/types';
+import { defineCatalogProducts } from '~/utils/defineCatalogProduct';
 
 useSeoMeta({
   title: 'Premium Kalamata PDO Extra Virgin Olive Oil',
@@ -246,7 +247,7 @@ useSeoMeta({
     'Shop Ana’s Estate premium Kalamata PDO Extra Virgin Olive Oil, produced in Greece from early-harvest Koroneiki olives. Single estate, cold extracted and available in Canada.',
 });
 
-const { data: products } = await useFetch('/api/products');
+const { data: products } = await useFetch<CatalogProduct[]>('/api/products');
 
 useSchemaOrg([
   defineWebSite({
@@ -259,30 +260,7 @@ useSchemaOrg([
     description:
       'Shop Ana’s Estate premium Kalamata PDO Extra Virgin Olive Oil, produced in Greece from early-harvest Koroneiki olives.',
   }),
-  ...(products.value ?? []).map((product) =>
-    defineProduct({
-      name: product.name,
-      description: product.description,
-      image: product.imageUrl,
-      sku: product.sku,
-      brand: {
-        '@type': 'Brand',
-        name: "Ana's Estate",
-      },
-      category: 'Extra Virgin Olive Oil',
-      countryOfOrigin: {
-        '@type': 'Country',
-        name: 'Greece',
-      },
-      offers: defineOffer({
-        url: productPath(product.sku),
-        price: (product.priceCents / 100).toFixed(2),
-        priceCurrency: 'CAD',
-        availability: 'https://schema.org/InStock',
-        itemCondition: 'https://schema.org/NewCondition',
-      }),
-    }),
-  ),
+  ...defineCatalogProducts(products.value),
 ]);
 
 const harvestSteps = [

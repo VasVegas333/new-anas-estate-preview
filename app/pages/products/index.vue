@@ -28,7 +28,7 @@
 
 <script setup lang="ts">
 import type { CatalogProduct } from '#shared/types';
-import { productPath } from '#shared/utils/product';
+import { defineCatalogProducts } from '~/utils/defineCatalogProduct';
 
 useSeoMeta({
   title: 'Shop',
@@ -39,23 +39,6 @@ const { data: products } = await useFetch<CatalogProduct[]>('/api/products');
 
 useSchemaOrg([
   defineWebPage({ name: 'Shop' }),
-  ...(products.value ?? []).map((product) =>
-    defineProduct({
-      name: product.name,
-      description: product.description,
-      image: product.imageUrl,
-      sku: product.sku,
-      brand: {
-        '@type': 'Brand',
-        name: "Ana's Estate",
-      },
-      offers: defineOffer({
-        url: productPath(product.sku),
-        price: (product.priceCents / 100).toFixed(2),
-        priceCurrency: 'CAD',
-        availability: 'https://schema.org/InStock',
-      }),
-    }),
-  ),
+  ...defineCatalogProducts(products.value),
 ]);
 </script>
