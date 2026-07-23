@@ -97,6 +97,9 @@ export default defineNuxtConfig({
     '/checkout/success': { static: true },
     '/checkout/cancel': { static: true },
   },
+  sitemap: {
+    sources: ['/api/__sitemap__/urls'],
+  },
   typescript: {
     strict: true,
     typeCheck: false,
