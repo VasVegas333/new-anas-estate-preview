@@ -39,6 +39,7 @@
             alt="Ana’s Estate 750 millilitre Extra Virgin Olive Oil bottle"
             loading="eager"
             sizes="(max-width: 680px) 72vw, 560px"
+            format="webp"
           />
         </div>
       </SectionContainer>
@@ -136,6 +137,7 @@
               :src="step.image"
               :alt="step.alt"
               loading="lazy"
+              format="webp"
               sizes="(max-width: 680px) 100vw, (max-width: 1000px) 50vw, 25vw"
             />
             <div class="harvest-content">
@@ -203,6 +205,7 @@
               alt=""
               class="tasting-icon"
               loading="lazy"
+              format="webp"
               sizes="62px"
             />
             <h3>{{ note.title }}</h3>
@@ -227,6 +230,7 @@
               alt=""
               aria-hidden="true"
               loading="lazy"
+              format="webp"
               sizes="72px"
             />
             <h3>{{ use.title }}</h3>
