@@ -2,7 +2,7 @@ import { defineOrganization } from 'nuxt-schema-org/schema';
 
 export default defineNuxtConfig({
   compatibilityDate: '2026-07-22',
-  modules: ['@nuxt/image', '@nuxtjs/seo'],
+  modules: ['@nuxt/image', '@nuxtjs/seo', 'nuxt-ai-ready'],
   css: ['~/assets/global.css'],
   image: {
     domains: ['files.stripe.com'],
@@ -98,4 +98,12 @@ export default defineNuxtConfig({
     strict: true,
     typeCheck: false,
   },
+  aiReady: {
+    runtimeSync: {
+      ttl: 3600,
+      batchSize: 20,
+      pruneTtl: 0
+    },
+    cron: true
+  }
 });
