@@ -2,7 +2,7 @@ import { defineOrganization } from 'nuxt-schema-org/schema';
 
 export default defineNuxtConfig({
   compatibilityDate: '2026-07-22',
-  modules: ['@nuxt/image', '@nuxtjs/seo'],
+  modules: ['@nuxt/image', '@nuxtjs/seo', 'nuxt-ai-ready'],
   css: ['~/assets/global.css'],
   image: {
     domains: ['files.stripe.com'],
@@ -87,15 +87,25 @@ export default defineNuxtConfig({
     }
   },
   routeRules: {
-    '/': { isr: true },
+    '/': { static: true },
     '/products': { swr: 300 },
-    '/contact': { isr: true },
-    '/policies/**': { isr: true },
+    '/contact': { static: true },
+    '/policies/**': { static: true },
     '/cart': { robots: 'noindex, nofollow' },
     '/checkout/**': { robots: 'noindex, nofollow' },
+    '/checkout/success': { static: true },
+    '/checkout/cancel': { static: true },
   },
   typescript: {
     strict: true,
     typeCheck: false,
   },
+  aiReady: {
+    runtimeSync: {
+      ttl: 3600,
+      batchSize: 20,
+      pruneTtl: 0
+    },
+    cron: true
+  }
 });
