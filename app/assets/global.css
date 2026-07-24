@@ -62,6 +62,19 @@ body {
   animation: page-fade-in 0.6s ease both;
 }
 
+#__nuxt {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+}
+
+.site-shell {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 100%;
+}
+
 body,
 button,
 input,
@@ -2739,6 +2752,34 @@ h3 {
   .policy-card h2 {
     font-size: 32px;
   }
+}
+
+/* ==================================================
+   Error page
+================================================== */
+
+.error-page {
+  display: grid;
+  flex: 1;
+  place-content: center;
+  justify-items: center;
+  width: 100%;
+  margin-inline: auto;
+  padding: 8em 2em;
+  text-align: center;
+  color: var(--body-text);
+  background: var(--paper);
+}
+
+.error-page h1 {
+  margin: 0;
+  color: var(--blue);
+  font: 600 clamp(40px, 5vw, 64px) / 0.95 var(--serif);
+}
+
+.error-page__description {
+  max-width: 36em;
+  margin: 0 0 8px;
 }
 
 /* ==================================================

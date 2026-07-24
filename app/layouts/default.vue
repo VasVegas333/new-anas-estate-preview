@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="site-shell">
     <div class="topbar">
       <span>Single Estate</span>
       <b aria-hidden="true">✦</b>
@@ -102,7 +102,7 @@
       </nav>
     </header>
 
-    <NuxtPage />
+    <slot />
 
     <footer class="site-footer">
       <div class="greek-line" aria-hidden="true"></div>
