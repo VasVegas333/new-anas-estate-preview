@@ -48,7 +48,7 @@
     </section>
 
     <div class="mobile-shop-cta" :class="{ 'is-stuck': ctaStuck }" :inert="!ctaStuck">
-      <Button to="/products" block>Shop Our Olive Oil</Button>
+      <Button to="/products">Shop Our Olive Oil</Button>
     </div>
 
     <section class="story-section" id="story" aria-labelledby="story-title">
