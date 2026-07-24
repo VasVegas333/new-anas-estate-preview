@@ -98,6 +98,7 @@ export default defineNuxtConfig({
     '/checkout/cancel': { static: true },
     '/shop': { redirect: '/products' },
     '/pricing': { redirect: '/products' },
+    '/partner-with-us': { redirect: '/contact' },
   },
   sitemap: {
     sources: ['/api/__sitemap__/urls'],
