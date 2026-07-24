@@ -29,7 +29,9 @@
           </p>
           <p class="script">Koroneiki Monovarietal</p>
           <p class="origin">Product of Greece / Produit de Grèce</p>
-          <Button to="/products">Shop Our Olive Oil</Button>
+          <div ref="ctaSentinel" class="hero-cta-wrap" :class="{ 'is-stuck': ctaStuck }">
+            <Button class="hero-cta" to="/products">Shop Our Olive Oil</Button>
+          </div>
         </div>
 
         <div class="hero-bottle-wrap parallax-layer" data-parallax-speed="-0.025">
@@ -44,6 +46,10 @@
         </div>
       </SectionContainer>
     </section>
+
+    <div class="mobile-shop-cta" :class="{ 'is-stuck': ctaStuck }" :inert="!ctaStuck">
+      <Button to="/products" block>Shop Our Olive Oil</Button>
+    </div>
 
     <section class="story-section" id="story" aria-labelledby="story-title">
       <SectionContainer narrow>
@@ -349,5 +355,36 @@ watch(
 
 onBeforeUnmount(() => {
   activeSectionId.value = null;
+});
+
+const ctaSentinel = ref<HTMLElement | null>(null);
+const ctaStuck = ref(false);
+const MOBILE_CTA_QUERY = '(max-width: 680px)';
+
+onMounted(() => {
+  if (!import.meta.client) return;
+
+  const media = window.matchMedia(MOBILE_CTA_QUERY);
+
+  const updateCtaStuck = () => {
+    if (!media.matches || !ctaSentinel.value) {
+      ctaStuck.value = false;
+      return;
+    }
+
+    // Stick once the in-flow CTA has scrolled just off the top of the viewport.
+    ctaStuck.value = ctaSentinel.value.getBoundingClientRect().bottom < 12;
+  };
+
+  updateCtaStuck();
+  window.addEventListener('scroll', updateCtaStuck, { passive: true });
+  window.addEventListener('resize', updateCtaStuck);
+  media.addEventListener('change', updateCtaStuck);
+
+  onBeforeUnmount(() => {
+    window.removeEventListener('scroll', updateCtaStuck);
+    window.removeEventListener('resize', updateCtaStuck);
+    media.removeEventListener('change', updateCtaStuck);
+  });
 });
 </script>
