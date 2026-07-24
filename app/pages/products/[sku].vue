@@ -41,7 +41,9 @@
                   >
                     −
                   </button>
-                  <span class="product-cart-qty__label">{{ quantity }} In Cart</span>
+                  <NuxtLink to="/cart" class="product-cart-qty__label">
+                    {{ quantity }} In Cart
+                  </NuxtLink>
                   <button
                     class="product-cart-qty__btn"
                     type="button"
